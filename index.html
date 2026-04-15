@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AZMANIA CONTENT HUB - v9.5 Optimized</title>
+    <title>AZMANIA CONTENT HUB - v9.8 Multi-Color Status</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
@@ -44,7 +44,7 @@
             text-shadow: 0 0 15px rgba(251, 206, 3, 0.4);
         }
 
-        /* Responsive Calendar Grid */
+        /* Calendar Grid */
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
@@ -56,53 +56,57 @@
         }
 
         .calendar-day {
-            min-height: 80px;
-            background: rgba(30, 41, 59, 0.4);
+            aspect-ratio: 1/1;
+            background: rgba(30, 41, 59, 0.3);
             border-radius: 16px;
-            padding: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.04);
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+            cursor: pointer;
         }
 
         @media (min-width: 768px) {
-            .calendar-day { min-height: 110px; padding: 12px; border-radius: 20px; }
+            .calendar-day { border-radius: 22px; }
         }
 
         .calendar-day:hover {
-            transform: translateY(-3px);
-            background: rgba(30, 41, 59, 0.8);
-            border-color: #818cf8;
+            transform: scale(1.05);
+            z-index: 10;
+            border-color: white;
         }
 
-        /* Highlighting Real Today */
+        /* Penanda Warna Berdasarkan Status */
+        .has-wait {
+            background: rgba(251, 191, 36, 0.25) !important;
+            border: 1px solid rgba(251, 191, 36, 0.5) !important;
+        }
+        .has-proses {
+            background: rgba(96, 165, 250, 0.25) !important;
+            border: 1px solid rgba(96, 165, 250, 0.5) !important;
+        }
+        .has-selesai {
+            background: rgba(52, 211, 153, 0.25) !important;
+            border: 1px solid rgba(52, 211, 153, 0.5) !important;
+        }
+        .has-publish {
+            background: rgba(192, 132, 252, 0.25) !important;
+            border: 1px solid rgba(192, 132, 252, 0.5) !important;
+        }
+
         .today-glow {
-            background: rgba(99, 102, 241, 0.15) !important;
-            border: 2px solid #6366f1 !important;
-            box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
+            outline: 2px solid #fbce03 !important;
+            outline-offset: 2px;
+            box-shadow: 0 0 20px rgba(251, 206, 3, 0.3);
         }
 
-        .project-tag {
-            font-size: 7px;
-            font-weight: 800;
-            padding: 2px 4px;
-            border-radius: 4px;
-            margin-bottom: 2px;
-            display: block;
-            text-transform: uppercase;
-            text-align: center;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        @media (min-width: 768px) {
-            .project-tag { font-size: 8px; padding: 4px 6px; border-radius: 8px; margin-bottom: 4px; }
-        }
-
-        .wait { background: #78350f; color: #fbbf24; border: 1px solid #d97706; }
-        .proses { background: #1e3a8a; color: #60a5fa; border: 1px solid #2563eb; }
-        .selesai { background: #064e3b; color: #34d399; border: 1px solid #059669; }
-        .publish { background: #4c1d95; color: #c084fc; border: 1px solid #7c3aed; }
+        .status-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+        .wait { background: #fbbf24; }
+        .proses { background: #60a5fa; }
+        .selesai { background: #34d399; }
+        .publish { background: #c084fc; }
 
         .btn-primary {
             background: var(--accent-gradient);
@@ -110,7 +114,6 @@
             box-shadow: 0 8px 20px -6px rgba(99, 102, 241, 0.5);
         }
 
-        /* In-Calendar Marquee */
         .calendar-footer-marquee {
             width: 100%;
             background: rgba(15, 23, 42, 0.6);
@@ -120,7 +123,6 @@
             border-bottom-left-radius: 24px;
             border-bottom-right-radius: 24px;
             overflow: hidden;
-            position: relative;
         }
 
         .marquee-content {
@@ -137,12 +139,9 @@
         .custom-scroll::-webkit-scrollbar { width: 4px; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
 
-        /* Mobile specific fixes */
         @media (max-width: 640px) {
-            .header-info { text-align: center; }
             .calendar-grid { gap: 4px; }
-            .calendar-day { border-radius: 10px; min-height: 60px; }
-            .day-label { font-size: 9px !important; }
+            .calendar-day { border-radius: 10px; }
         }
     </style>
 </head>
@@ -208,7 +207,7 @@
                     <div id="today-tasks" class="space-y-3 max-h-[180px] overflow-y-auto custom-scroll pr-1"></div>
                 </div>
 
-                <!-- Agenda Mendatang (PENGINGAT TERDEKAT) -->
+                <!-- Agenda Mendatang -->
                 <div class="glass-panel p-5 border-l-4 border-l-indigo-500">
                     <h3 class="text-[10px] font-black text-white uppercase tracking-widest mb-4 flex items-center gap-3">
                         <i class="fa-solid fa-calendar-check text-indigo-500"></i> Mendatang
@@ -220,7 +219,6 @@
             <!-- Main Area -->
             <main class="lg:col-span-9 space-y-6 md:space-y-8 order-1 lg:order-2">
                 <div class="glass-panel p-4 md:p-8 flex flex-col">
-                    <!-- Navigasi Bulan -->
                     <div class="flex items-center justify-between mb-6 md:mb-10">
                         <button onclick="changeMonth(-1)" class="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-slate-800 hover:bg-slate-700 text-white transition-all border border-white/10 flex items-center justify-center"><i class="fa-solid fa-chevron-left text-sm"></i></button>
                         <div class="text-center">
@@ -230,7 +228,14 @@
                         <button onclick="changeMonth(1)" class="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-slate-800 hover:bg-slate-700 text-white transition-all border border-white/10 flex items-center justify-center"><i class="fa-solid fa-chevron-right text-sm"></i></button>
                     </div>
 
-                    <!-- Kalender Grid -->
+                    <!-- Legend Indikator Warna -->
+                    <div class="flex flex-wrap gap-4 mb-6 justify-center">
+                        <div class="flex items-center gap-2"><div class="status-dot wait"></div><span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Wait</span></div>
+                        <div class="flex items-center gap-2"><div class="status-dot proses"></div><span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Proses</span></div>
+                        <div class="flex items-center gap-2"><div class="status-dot selesai"></div><span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Done</span></div>
+                        <div class="flex items-center gap-2"><div class="status-dot publish"></div><span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Publish</span></div>
+                    </div>
+
                     <div class="calendar-grid">
                         <div class="text-center py-2 text-[9px] md:text-[11px] font-black text-slate-500 uppercase tracking-widest day-label">Min</div>
                         <div class="text-center py-2 text-[9px] md:text-[11px] font-black text-slate-500 uppercase tracking-widest day-label">Sen</div>
@@ -242,39 +247,18 @@
                         <div id="calendar-days" class="contents"></div>
                     </div>
 
-                    <!-- In-Box Marquee -->
                     <div class="calendar-footer-marquee">
                         <div class="marquee-content" id="marquee-list"></div>
-                    </div>
-                </div>
-
-                <!-- Legend -->
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-                    <div class="glass-panel p-3 flex items-center justify-center gap-3 border-amber-500/20">
-                        <div class="w-2.5 h-2.5 rounded-full bg-amber-400 shadow-[0_0_8px_#fbbf24]"></div>
-                        <span class="text-[9px] font-black text-amber-400 uppercase tracking-widest">Antrean</span>
-                    </div>
-                    <div class="glass-panel p-3 flex items-center justify-center gap-3 border-blue-500/20">
-                        <div class="w-2.5 h-2.5 rounded-full bg-blue-400 shadow-[0_0_8px_#60a5fa]"></div>
-                        <span class="text-[9px] font-black text-blue-400 uppercase tracking-widest">Proses</span>
-                    </div>
-                    <div class="glass-panel p-3 flex items-center justify-center gap-3 border-emerald-500/20">
-                        <div class="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]"></div>
-                        <span class="text-[9px] font-black text-emerald-400 uppercase tracking-widest">Selesai</span>
-                    </div>
-                    <div class="glass-panel p-3 flex items-center justify-center gap-3 border-purple-500/20">
-                        <div class="w-2.5 h-2.5 rounded-full bg-purple-400 shadow-[0_0_8px_#c084fc]"></div>
-                        <span class="text-[9px] font-black text-purple-400 uppercase tracking-widest">Tayang</span>
                     </div>
                 </div>
             </main>
         </div>
     </div>
 
-    <!-- Modals -->
-    <div id="formModal" class="fixed inset-0 z-[1000] hidden flex items-center justify-center p-4 bg-slate-950/95 backdrop-blur-xl">
-        <div class="glass-panel w-full max-w-lg p-8 md:p-10 border-indigo-500/30">
-            <h3 class="text-2xl md:text-3xl font-black mb-1 text-white uppercase tracking-tighter">Entri Pipeline</h3>
+    <!-- Modals (Form & Detail) -->
+    <div id="formModal" class="fixed inset-0 z-[2000] hidden flex items-center justify-center p-4 bg-slate-950/95 backdrop-blur-xl">
+        <div class="glass-panel w-full max-w-lg p-8 border-indigo-500/30">
+            <h3 class="text-2xl font-black mb-1 text-white uppercase tracking-tighter">Entri Pipeline</h3>
             <p class="text-slate-400 text-[10px] mb-8 font-bold uppercase tracking-widest">Detail Metadata Produksi</p>
             <form id="projectForm" class="space-y-5">
                 <div class="space-y-2">
@@ -305,17 +289,46 @@
     </div>
 
     <div id="detailModal" class="fixed inset-0 z-[1000] hidden flex items-center justify-center p-4 bg-slate-950/95 backdrop-blur-xl">
-        <div class="glass-panel w-full max-w-2xl max-h-[80vh] flex flex-col overflow-hidden border-indigo-500/20">
+        <div class="glass-panel w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden border-indigo-500/20">
             <div class="p-6 border-b border-white/10 flex justify-between items-center bg-slate-900">
-                <h3 id="detail-date" class="text-xl md:text-2xl font-black text-white uppercase tracking-tighter"></h3>
+                <h3 id="detail-date-title" class="text-xl md:text-2xl font-black text-white uppercase tracking-tighter"></h3>
                 <button onclick="closeModal('detailModal')" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-800 hover:bg-red-500 transition-all"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div id="detail-list" class="p-6 space-y-4 overflow-y-auto custom-scroll"></div>
+            
+            <div class="flex flex-col md:flex-row h-full overflow-hidden">
+                <div class="flex-grow p-6 overflow-y-auto custom-scroll border-b md:border-b-0 md:border-r border-white/10">
+                    <p class="text-[9px] font-black text-indigo-300 uppercase tracking-widest mb-4">Daftar Agenda</p>
+                    <div id="detail-list" class="space-y-4"></div>
+                </div>
+                
+                <div class="w-full md:w-80 p-6 bg-slate-900/50">
+                    <p class="text-[9px] font-black text-indigo-300 uppercase tracking-widest mb-4">Input Proyek Baru</p>
+                    <form id="quickAddForm" class="space-y-4">
+                        <input type="hidden" id="quick-date">
+                        <div class="space-y-1">
+                            <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Nama Proyek</label>
+                            <input type="text" id="q-title" required class="w-full px-4 py-2 bg-slate-800 border border-white/5 rounded-lg text-xs text-white font-bold outline-none focus:border-indigo-500">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Kategori</label>
+                            <select id="q-cat" class="w-full px-4 py-2 bg-slate-800 border border-white/5 rounded-lg text-xs text-white font-bold outline-none focus:border-indigo-500">
+                                <option value="Video">Video</option>
+                                <option value="Desain">Desain</option>
+                                <option value="Sosmed">Sosmed</option>
+                                <option value="IT Hub">IT Hub</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="w-full py-3 btn-primary text-white rounded-lg font-black text-[9px] uppercase tracking-widest mt-2 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-plus text-xs"></i> Tambah Proyek
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        let projects = JSON.parse(localStorage.getItem('azmania_v95_db')) || [];
+        let projects = JSON.parse(localStorage.getItem('azmania_v97_db')) || [];
         let currentViewDate = new Date();
         const months = ["JANUARI", "FEBRUARI", "MARET", "APRIL", "MEI", "JUNI", "JULI", "AGUSTUS", "SEPTEMBER", "OKTOBER", "NOVEMBER", "DESEMBER"];
 
@@ -356,11 +369,25 @@
         function renderStats() {
             const active = projects.filter(p => p.status !== 'publish');
             document.getElementById('active-count').innerText = active.length;
-            if (projects.length === 0) return;
+            if (projects.length === 0) {
+                document.getElementById('avg-bar').style.width = '0%';
+                document.getElementById('avg-text').innerText = '0%';
+                return;
+            }
             const weights = { 'wait': 10, 'proses': 50, 'selesai': 90, 'publish': 100 };
             const avg = Math.round(projects.reduce((acc, p) => acc + (weights[p.status] || 0), 0) / projects.length);
             document.getElementById('avg-bar').style.width = avg + '%';
             document.getElementById('avg-text').innerText = avg + '%';
+        }
+
+        function getPriorityStatus(dayTasks) {
+            if (dayTasks.length === 0) return null;
+            // Prioritas warna jika ada beberapa status di hari yang sama
+            if (dayTasks.some(p => p.status === 'wait')) return 'has-wait';
+            if (dayTasks.some(p => p.status === 'proses')) return 'has-proses';
+            if (dayTasks.some(p => p.status === 'selesai')) return 'has-selesai';
+            if (dayTasks.some(p => p.status === 'publish')) return 'has-publish';
+            return null;
         }
 
         function renderCalendar() {
@@ -382,19 +409,13 @@
                 const dateStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${d.toString().padStart(2, '0')}`;
                 const dayTasks = projects.filter(p => p.date === dateStr);
                 const isToday = dateStr === realDateStr;
+                const statusClass = getPriorityStatus(dayTasks);
 
                 const dayEl = document.createElement('div');
-                dayEl.className = `calendar-day cursor-pointer flex flex-col ${isToday ? 'today-glow' : ''}`;
+                dayEl.className = `calendar-day ${isToday ? 'today-glow' : ''} ${statusClass ? statusClass : ''}`;
                 dayEl.onclick = () => openDetail(dateStr);
-                dayEl.innerHTML = `
-                    <div class="flex justify-between items-start mb-1">
-                        <span class="text-[10px] md:text-[12px] font-black ${isToday ? 'text-white' : 'text-slate-400'}">${d}</span>
-                        ${dayTasks.length > 0 ? `<div class="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-indigo-500 shadow-[0_0_8px_#6366f1]"></div>` : ''}
-                    </div>
-                    <div class="flex-grow space-y-0.5 md:space-y-1">
-                        ${dayTasks.slice(0, 2).map(p => `<span class="project-tag ${p.status}">${p.title}</span>`).join('')}
-                    </div>
-                `;
+                
+                dayEl.innerHTML = `<span class="text-sm md:text-xl font-black ${isToday ? 'text-white' : (statusClass ? 'text-white' : 'text-slate-500')}">${d}</span>`;
                 grid.appendChild(dayEl);
             }
         }
@@ -403,7 +424,6 @@
             const today = new Date();
             const todayStr = `${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getDate().toString().padStart(2, '0')}`;
             
-            // Hari Ini
             const todayTasks = projects.filter(p => p.date === todayStr);
             const todayContainer = document.getElementById('today-tasks');
             if (todayTasks.length === 0) {
@@ -411,13 +431,12 @@
             } else {
                 todayContainer.innerHTML = todayTasks.map(p => `
                     <div class="bg-slate-800/60 p-3 rounded-xl border border-white/5 flex items-center gap-3 cursor-pointer" onclick="openDetail('${p.date}')">
-                        <div class="w-1.5 h-6 rounded-full ${getStatusColor(p.status)}"></div>
-                        <p class="text-[10px] font-black text-white truncate uppercase">${p.title}</p>
+                        <div class="status-dot ${p.status} w-2 h-2"></div>
+                        <p class="text-[10px] font-black text-white truncate uppercase tracking-tight">${p.title}</p>
                     </div>
                 `).join('');
             }
 
-            // Mendatang (Sorting berdasarkan tanggal terdekat setelah hari ini)
             const upcomingContainer = document.getElementById('upcoming-tasks');
             const upcomingTasks = projects.filter(p => p.date > todayStr).sort((a,b) => a.date.localeCompare(b.date));
 
@@ -431,7 +450,7 @@
                         <div class="bg-slate-800/40 p-3 rounded-xl border border-white/5 flex flex-col gap-1 cursor-pointer hover:bg-slate-800/80 transition-all" onclick="openDetail('${p.date}')">
                             <div class="flex justify-between items-center">
                                 <span class="text-[8px] font-black text-indigo-400 tracking-tighter">${formattedDate}</span>
-                                <div class="w-1 h-1 rounded-full ${getStatusColor(p.status)}"></div>
+                                <div class="status-dot ${p.status} w-1.5 h-1.5"></div>
                             </div>
                             <p class="text-[10px] font-black text-slate-200 truncate uppercase tracking-tight">${p.title}</p>
                         </div>
@@ -440,39 +459,57 @@
             }
         }
 
-        function getStatusColor(s) {
-            if(s === 'wait') return 'bg-amber-400';
-            if(s === 'proses') return 'bg-blue-400';
-            if(s === 'selesai') return 'bg-emerald-400';
-            return 'bg-purple-500';
-        }
-
         function openDetail(date) {
             const list = document.getElementById('detail-list');
             const dayTasks = projects.filter(p => p.date === date);
-            document.getElementById('detail-date').innerText = new Date(date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase();
+            
+            document.getElementById('detail-date-title').innerText = new Date(date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase();
+            document.getElementById('quick-date').value = date;
             
             list.innerHTML = dayTasks.length === 0 ? 
-                `<p class="text-center py-10 text-slate-500 font-black uppercase text-xs tracking-widest">Tidak ada aktivitas</p>` :
+                `<div class="flex flex-col items-center justify-center py-10 opacity-30">
+                    <i class="fa-solid fa-calendar-day text-5xl mb-3"></i>
+                    <p class="text-center text-slate-500 font-black uppercase text-[10px] tracking-[0.2em]">Tidak ada agenda</p>
+                </div>` :
                 dayTasks.map(p => `
-                    <div class="bg-slate-800 p-4 rounded-2xl border border-white/10 flex items-center justify-between gap-4">
-                        <div class="min-w-0">
-                            <p class="text-[8px] font-black text-indigo-400 uppercase tracking-widest">${p.cat}</p>
-                            <h4 class="text-sm font-black text-white uppercase truncate">${p.title}</h4>
+                    <div class="bg-slate-800 p-4 rounded-2xl border border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <div class="status-dot ${p.status} w-2 h-2 shrink-0"></div>
+                            <div class="truncate">
+                                <p class="text-[8px] font-black text-indigo-400 uppercase tracking-widest leading-none mb-1">${p.cat}</p>
+                                <h4 class="text-sm font-black text-white uppercase truncate">${p.title}</h4>
+                            </div>
                         </div>
-                        <div class="flex items-center gap-2">
-                            <select onchange="updateStatus(${p.id}, this.value, '${date}')" class="bg-slate-900 text-[10px] font-black text-white p-2 rounded-lg outline-none border border-white/10">
+                        <div class="flex items-center gap-2 justify-end">
+                            <select onchange="updateStatus(${p.id}, this.value, '${date}')" class="bg-slate-900 text-[10px] font-black text-white px-3 py-2 rounded-lg outline-none border border-white/10">
                                 <option value="wait" ${p.status==='wait'?'selected':''}>WAIT</option>
                                 <option value="proses" ${p.status==='proses'?'selected':''}>PROSES</option>
                                 <option value="selesai" ${p.status==='selesai'?'selected':''}>DONE</option>
                                 <option value="publish" ${p.status==='publish'?'selected':''}>PUBLISH</option>
                             </select>
-                            <button onclick="deleteProject(${p.id}, '${date}')" class="w-8 h-8 flex items-center justify-center rounded-lg bg-red-600/20 text-red-500 hover:bg-red-600 hover:text-white transition-all"><i class="fa-solid fa-trash text-xs"></i></button>
+                            <button onclick="deleteProject(${p.id}, '${date}')" class="w-9 h-9 flex items-center justify-center rounded-lg bg-red-600/10 text-red-500 hover:bg-red-600 hover:text-white transition-all"><i class="fa-solid fa-trash-can text-xs"></i></button>
                         </div>
                     </div>
                 `).join('');
+            
             document.getElementById('detailModal').classList.remove('hidden');
         }
+
+        document.getElementById('quickAddForm').onsubmit = (e) => {
+            e.preventDefault();
+            const date = document.getElementById('quick-date').value;
+            projects.push({
+                id: Date.now(),
+                title: document.getElementById('q-title').value,
+                date: date,
+                cat: document.getElementById('q-cat').value,
+                status: 'wait'
+            });
+            save();
+            openDetail(date);
+            e.target.reset();
+            document.getElementById('quick-date').value = date;
+        };
 
         function updateStatus(id, status, date) {
             projects = projects.map(p => p.id === id ? {...p, status} : p);
@@ -483,8 +520,7 @@
         function deleteProject(id, date) {
             projects = projects.filter(p => p.id !== id);
             save();
-            const remaining = projects.filter(p => p.date === date);
-            if (remaining.length > 0) openDetail(date); else closeModal('detailModal');
+            openDetail(date);
         }
 
         function changeMonth(dir) {
@@ -492,7 +528,11 @@
             renderCalendar();
         }
 
-        function openFormModal() { document.getElementById('formModal').classList.remove('hidden'); }
+        function openFormModal() { 
+            document.getElementById('p-date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('formModal').classList.remove('hidden'); 
+        }
+
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
         document.getElementById('projectForm').onsubmit = (e) => {
@@ -510,8 +550,8 @@
         };
 
         function save() {
-            localStorage.setItem('azmania_v95_db', JSON.stringify(projects));
-            init();
+            localStorage.setItem('azmania_v97_db', JSON.stringify(projects));
+            init(); 
         }
 
         window.onload = init;
