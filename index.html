@@ -8,9 +8,6 @@
     <style>
         body { background: #0f172a; color: white; font-family: sans-serif; }
         .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); }
-        /* Animasi sederhana untuk loading */
-        .pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
     </style>
 </head>
 <body class="p-4 md:p-8">
@@ -18,61 +15,50 @@
     <div class="max-w-4xl mx-auto flex justify-between items-center mb-8">
         <div>
             <h1 class="text-3xl font-black tracking-tighter text-blue-500">AZMANIA CONTENT HUB</h1>
-            <p class="text-[10px] text-gray-500 tracking-widest uppercase">Creative Production Pipeline | HUMAS IT</p>
+            <p class="text-xs text-gray-400">IT & Production Pipeline | HUMAS IT</p>
         </div>
-        <button onclick="document.getElementById('formModal').classList.remove('hidden')" class="bg-blue-600 hover:bg-blue-700 px-5 py-2.5 rounded-xl font-bold text-sm transition shadow-lg shadow-blue-900/20">
+        <button onclick="document.getElementById('formModal').classList.remove('hidden')" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg font-bold text-sm transition">
             + BUAT PROYEK
         </button>
     </div>
 
     <div class="max-w-4xl mx-auto grid grid-cols-2 gap-4 mb-8">
-        <div class="glass p-5 rounded-2xl border border-gray-800">
-            <p class="text-[10px] text-gray-500 uppercase font-bold mb-1">Aktif Pipeline</p>
-            <h2 id="stat-active" class="text-3xl font-black text-white">0</h2>
+        <div class="glass p-4 rounded-2xl border border-gray-700 text-center">
+            <p class="text-xs text-gray-400 uppercase">Aktif Pipeline</p>
+            <h2 id="stat-active" class="text-2xl font-bold">0</h2>
         </div>
-        <div class="glass p-5 rounded-2xl border border-gray-800">
-            <p class="text-[10px] text-gray-500 uppercase font-bold mb-1">Status Server</p>
-            <h2 class="text-sm font-bold text-green-500 flex items-center gap-2">
-                <span class="w-2 h-2 bg-green-500 rounded-full pulse"></span> TERHUBUNG CLOUD
-            </h2>
+        <div class="glass p-4 rounded-2xl border border-gray-700 text-center">
+            <p class="text-xs text-gray-400 uppercase">Status Server</p>
+            <h2 id="status-cloud" class="text-sm font-bold text-green-500">TERHUBUNG CLOUD</h2>
         </div>
     </div>
 
     <div class="max-w-4xl mx-auto">
-        <div class="flex items-center justify-between mb-6">
-            <h3 class="font-bold flex items-center gap-2 text-gray-300">
-                <span class="w-1 h-5 bg-blue-600 rounded-full"></span> MASTER SCHEDULE
-            </h3>
-            <button onclick="init()" class="text-[10px] bg-gray-800 px-3 py-1 rounded-md text-gray-400 hover:text-white">REFRESH DATA</button>
-        </div>
+        <h3 class="font-bold mb-4 flex items-center gap-2">
+            <span class="w-2 h-6 bg-blue-500 rounded-full"></span> MASTER SCHEDULE
+        </h3>
         
         <div id="pipeline-list" class="space-y-4">
-            <div class="py-20 text-center">
-                <p class="text-gray-600 text-sm pulse">Sinkronisasi data Google Sheets...</p>
-            </div>
+            <p class="text-center text-gray-500 py-10">Sinkronisasi Cloud...</p>
         </div>
     </div>
 
-    <div id="formModal" class="fixed inset-0 bg-black/90 flex items-center justify-center hidden z-50 p-4 backdrop-blur-sm">
-        <div class="glass border border-gray-800 p-8 rounded-[2rem] w-full max-w-md shadow-2xl">
-            <h2 class="text-2xl font-black mb-1">Proyek Baru</h2>
-            <p class="text-gray-500 text-xs mb-6">Tambahkan ke alur kerja Humas IT</p>
-            
-            <form id="projectForm" class="space-y-5">
+    <div id="formModal" class="fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50 p-4">
+        <div class="glass border border-gray-700 p-6 rounded-3xl w-full max-w-md">
+            <h2 class="text-xl font-bold mb-4">Input Proyek Baru</h2>
+            <form id="projectForm" class="space-y-4">
                 <div>
-                    <label class="text-[10px] font-bold text-gray-500 uppercase ml-1">Judul Konten</label>
-                    <input type="text" id="p-title" placeholder="Contoh: Video Profil Prodi" required 
-                        class="w-full bg-gray-950 border border-gray-800 p-4 rounded-2xl focus:outline-none focus:border-blue-600 transition text-white">
+                    <label class="text-xs text-gray-400">Nama Proyek</label>
+                    <input type="text" id="p-title" required class="w-full bg-gray-900 border border-gray-700 p-3 rounded-xl focus:outline-none focus:border-blue-500 text-white">
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="text-[10px] font-bold text-gray-500 uppercase ml-1">Tenggat Waktu</label>
-                        <input type="date" id="p-date" required 
-                            class="w-full bg-gray-950 border border-gray-800 p-4 rounded-2xl focus:outline-none focus:border-blue-600 text-white text-sm">
+                        <label class="text-xs text-gray-400">Deadline</label>
+                        <input type="date" id="p-date" required class="w-full bg-gray-900 border border-gray-700 p-3 rounded-xl focus:outline-none focus:border-blue-500 text-white">
                     </div>
                     <div>
-                        <label class="text-[10px] font-bold text-gray-500 uppercase ml-1">Kategori</label>
-                        <select id="p-cat" class="w-full bg-gray-950 border border-gray-800 p-4 rounded-2xl focus:outline-none focus:border-blue-600 text-sm">
+                        <label class="text-xs text-gray-400">Kategori</label>
+                        <select id="p-cat" class="w-full bg-gray-900 border border-gray-700 p-3 rounded-xl focus:outline-none text-white">
                             <option value="Video">Video</option>
                             <option value="Desain">Desain</option>
                             <option value="Sosmed">Sosmed</option>
@@ -80,27 +66,25 @@
                         </select>
                     </div>
                 </div>
-                <div class="flex gap-3 pt-6">
-                    <button type="button" onclick="closeModal('formModal')" class="flex-1 bg-gray-900 hover:bg-gray-800 p-4 rounded-2xl font-bold transition">Batal</button>
-                    <button type="submit" id="btn-submit" class="flex-1 bg-blue-600 hover:bg-blue-700 p-4 rounded-2xl font-bold transition shadow-lg shadow-blue-900/40">Kirim Cloud</button>
+                <div class="flex gap-2 pt-4">
+                    <button type="button" onclick="closeModal('formModal')" class="flex-1 bg-gray-800 p-3 rounded-xl font-bold">Batal</button>
+                    <button type="submit" id="btn-submit" class="flex-1 bg-blue-600 p-3 rounded-xl font-bold">Simpan Proyek</button>
                 </div>
             </form>
         </div>
     </div>
 
     <script>
-        // URL API Google Apps Script Anda
         const scriptURL = 'https://script.google.com/macros/s/AKfycbzW10m2jnwQBLTD56ASdv19luj1pOx692R7Q4LOCrdMQk1zvOHReatkTW8xTVTW_0YE/exec';
-        
         let projects = [];
 
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
-        // MENGIRIM DATA KE GOOGLE SHEETS
+        // FUNGSI SIMPAN KE CLOUD
         document.getElementById('projectForm').onsubmit = async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btn-submit');
-            btn.innerText = "Processing...";
+            btn.innerText = "Mengirim...";
             btn.disabled = true;
 
             const payload = {
@@ -110,27 +94,20 @@
             };
 
             try {
-                const response = await fetch(scriptURL, { 
-                    method: 'POST', 
-                    body: JSON.stringify(payload) 
-                });
-                
-                if(response.ok) {
-                    closeModal('formModal');
-                    e.target.reset();
-                    init(); // Refresh data otomatis setelah input
-                }
+                await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
+                closeModal('formModal');
+                e.target.reset();
+                init(); // Segarkan tampilan
             } catch (err) {
-                alert("Koneksi gagal: " + err);
+                alert("Gagal koneksi ke Google Sheets: " + err);
             } finally {
-                btn.innerText = "Kirim Cloud";
+                btn.innerText = "Simpan Proyek";
                 btn.disabled = false;
             }
         };
 
-        // MENGAMBIL DATA DARI GOOGLE SHEETS
+        // FUNGSI AMBIL DATA DARI CLOUD
         async function init() {
-            const list = document.getElementById('pipeline-list');
             try {
                 const response = await fetch(scriptURL);
                 const dataCloud = await response.json();
@@ -139,50 +116,35 @@
                 document.getElementById('stat-active').innerText = projects.length;
                 render();
             } catch (error) {
-                list.innerHTML = `<div class="p-10 text-center glass rounded-2xl border border-red-900/30">
-                    <p class="text-red-500 font-bold">Gagal Sinkronisasi Cloud</p>
-                    <p class="text-xs text-gray-500 mt-2">Cek koneksi internet atau status Deployment Apps Script Anda.</p>
-                </div>`;
+                document.getElementById('pipeline-list').innerHTML = `<p class="text-center text-red-400">Gagal memuat data Cloud.</p>`;
             }
         }
 
-        // MENAMPILKAN DATA KE LAYAR (UI)
+        // FUNGSI RENDER TAMPILAN
         function render() {
             const list = document.getElementById('pipeline-list');
             list.innerHTML = "";
 
             if (projects.length === 0) {
-                list.innerHTML = `
-                    <div class="py-20 text-center glass rounded-[2rem] border border-gray-800">
-                        <p class="text-gray-600 text-sm tracking-widest uppercase font-bold">Pipeline Kosong</p>
-                    </div>`;
+                list.innerHTML = `<p class="text-center text-gray-600 py-10 font-bold uppercase tracking-widest">Pipeline Kosong</p>`;
                 return;
             }
 
             projects.forEach(item => {
-                // Logika warna status
-                let statusLabel = item.status ? item.status.toUpperCase() : "WAIT";
-                let statusClass = "bg-yellow-500/10 text-yellow-500 border-yellow-500/30"; // Default: WAIT / PROSES
-                
-                if (statusLabel === "DONE") statusClass = "bg-green-500/10 text-green-500 border-green-500/30";
-                if (statusLabel === "PUBLISH") statusClass = "bg-blue-500/10 text-blue-500 border-blue-500/30";
+                let statusColor = "bg-yellow-500/20 text-yellow-500 border-yellow-500/50";
+                let statusLabel = (item.status || 'WAIT').toUpperCase();
+
+                if (statusLabel === "DONE") statusColor = "bg-green-500/20 text-green-500 border-green-500/50";
+                if (statusLabel === "PUBLISH") statusColor = "bg-blue-500/20 text-blue-500 border-blue-500/50";
 
                 list.innerHTML += `
-                    <div class="glass p-6 rounded-[2rem] border border-gray-800 flex justify-between items-center group hover:border-blue-900/50 transition-all duration-300">
-                        <div class="flex items-center gap-5">
-                            <div class="w-12 h-12 rounded-2xl bg-gray-900 border border-gray-800 flex items-center justify-center text-xl">
-                                ${getEmoji(item.kategori)}
-                            </div>
-                            <div>
-                                <h4 class="text-lg font-black text-white group-hover:text-blue-400 transition-colors">${item.nama}</h4>
-                                <div class="flex items-center gap-3 mt-1">
-                                    <span class="text-[10px] font-black uppercase text-gray-500 tracking-tighter">${item.kategori}</span>
-                                    <span class="w-1 h-1 bg-gray-700 rounded-full"></span>
-                                    <p class="text-[10px] text-gray-400 font-bold uppercase tracking-tighter">Deadline: ${item.deadline}</p>
-                                </div>
-                            </div>
+                    <div class="glass p-5 rounded-2xl border border-gray-700 flex justify-between items-center group hover:border-blue-500 transition-all">
+                        <div>
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-blue-400">${item.kategori}</span>
+                            <h4 class="text-lg font-bold text-white">${item.nama}</h4>
+                            <p class="text-xs text-gray-500 font-medium">Tenggat: ${item.deadline}</p>
                         </div>
-                        <div class="px-4 py-1.5 rounded-xl border text-[9px] font-black tracking-widest ${statusClass}">
+                        <div class="px-3 py-1 rounded-full border text-[9px] font-black uppercase tracking-wider ${statusColor}">
                             ${statusLabel}
                         </div>
                     </div>
@@ -190,15 +152,7 @@
             });
         }
 
-        // Helper untuk ikon kategori
-        function getEmoji(cat) {
-            if(cat === 'Video') return '🎬';
-            if(cat === 'Desain') return '🎨';
-            if(cat === 'Sosmed') return '📱';
-            return '💻';
-        }
-
-        // Jalankan sinkronisasi pertama kali saat web dibuka
+        // Jalankan sinkronisasi otomatis
         window.onload = init;
     </script>
 </body>
