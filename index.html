@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AZMANIA CONTENT HUB - v9.8 Multi-Color Status</title>
+    <title>AZMANIA CONTENT HUB - Cloud Sync v10</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
@@ -44,7 +44,6 @@
             text-shadow: 0 0 15px rgba(251, 206, 3, 0.4);
         }
 
-        /* Calendar Grid */
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
@@ -68,33 +67,17 @@
             cursor: pointer;
         }
 
-        @media (min-width: 768px) {
-            .calendar-day { border-radius: 22px; }
-        }
-
         .calendar-day:hover {
             transform: scale(1.05);
             z-index: 10;
             border-color: white;
         }
 
-        /* Penanda Warna Berdasarkan Status */
-        .has-wait {
-            background: rgba(251, 191, 36, 0.25) !important;
-            border: 1px solid rgba(251, 191, 36, 0.5) !important;
-        }
-        .has-proses {
-            background: rgba(96, 165, 250, 0.25) !important;
-            border: 1px solid rgba(96, 165, 250, 0.5) !important;
-        }
-        .has-selesai {
-            background: rgba(52, 211, 153, 0.25) !important;
-            border: 1px solid rgba(52, 211, 153, 0.5) !important;
-        }
-        .has-publish {
-            background: rgba(192, 132, 252, 0.25) !important;
-            border: 1px solid rgba(192, 132, 252, 0.5) !important;
-        }
+        /* Status Colors */
+        .has-wait { background: rgba(251, 191, 36, 0.25) !important; border: 1px solid rgba(251, 191, 36, 0.5) !important; }
+        .has-proses { background: rgba(96, 165, 250, 0.25) !important; border: 1px solid rgba(96, 165, 250, 0.5) !important; }
+        .has-selesai { background: rgba(52, 211, 153, 0.25) !important; border: 1px solid rgba(52, 211, 153, 0.5) !important; }
+        .has-publish { background: rgba(192, 132, 252, 0.25) !important; border: 1px solid rgba(192, 132, 252, 0.5) !important; }
 
         .today-glow {
             outline: 2px solid #fbce03 !important;
@@ -136,29 +119,52 @@
             100% { transform: translateX(-50%); }
         }
 
+        .sync-indicator {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 50;
+            padding: 10px 20px;
+            border-radius: 99px;
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid rgba(99, 102, 241, 0.4);
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateY(120px);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5);
+        }
+
+        .sync-indicator.active { transform: translateY(0); }
+
         .custom-scroll::-webkit-scrollbar { width: 4px; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-
-        @media (max-width: 640px) {
-            .calendar-grid { gap: 4px; }
-            .calendar-day { border-radius: 10px; }
-        }
     </style>
 </head>
 <body class="p-3 md:p-8">
+
+    <!-- Sync Alert Indicator -->
+    <div id="syncIndicator" class="sync-indicator">
+        <i id="syncIcon" class="fa-solid fa-cloud-arrow-up animate-bounce text-indigo-400"></i>
+        <span id="syncText" class="text-slate-200 tracking-widest">Menyinkronkan...</span>
+    </div>
 
     <div class="max-w-7xl mx-auto">
         <!-- Header -->
         <header class="flex flex-col md:flex-row justify-between items-center mb-6 md:mb-10 gap-6">
             <div class="flex items-center gap-4 md:gap-5">
                 <div class="p-3 md:p-4 bg-slate-800 rounded-2xl border border-white/10 shadow-xl">
-                    <i class="fa-solid fa-layer-group text-indigo-400 text-xl md:text-2xl"></i>
+                    <i class="fa-solid fa-cloud-bolt text-indigo-400 text-xl md:text-2xl"></i>
                 </div>
                 <div>
                     <h1 class="text-xl md:text-3xl font-black brand-text uppercase tracking-tight leading-none">
                         AZMANIA CONTENT <span class="brand-hub">HUB</span>
                     </h1>
-                    <p class="text-indigo-300 text-[8px] md:text-[10px] font-bold tracking-[0.4em] mt-1 uppercase opacity-90">IT & Production Pipeline</p>
+                    <p class="text-indigo-300 text-[8px] md:text-[10px] font-bold tracking-[0.4em] mt-1 uppercase opacity-90">Google Sheet Integrated</p>
                 </div>
             </div>
 
@@ -168,11 +174,10 @@
                         <div id="clock-time" class="text-lg md:text-2xl font-black text-white tracking-widest font-mono">00:00:00</div>
                         <div id="clock-date" class="text-[8px] md:text-[10px] font-bold text-slate-300 uppercase tracking-widest">LOADING...</div>
                     </div>
-                    <div class="hidden md:block w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_10px_#10b981] animate-pulse"></div>
                 </div>
                 <div class="h-8 md:h-10 w-px bg-white/10"></div>
                 <button onclick="openFormModal()" class="btn-primary px-4 md:px-7 py-2 md:py-3 rounded-xl md:rounded-2xl font-black text-[9px] md:text-[10px] uppercase tracking-widest flex items-center gap-2 active:scale-95 transition-transform">
-                    <i class="fa-solid fa-plus-circle text-sm"></i> <span class="hidden sm:inline">BUAT</span> PROYEK
+                    <i class="fa-solid fa-plus-circle text-sm"></i> <span class="hidden sm:inline">TAMBAH</span> PROYEK
                 </button>
             </div>
         </header>
@@ -180,17 +185,16 @@
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8">
             <!-- Sidebar -->
             <aside class="lg:col-span-3 space-y-6 md:space-y-8 order-2 lg:order-1">
-                <!-- Status Card -->
                 <div class="glass-panel p-6 md:p-8 relative overflow-hidden">
                     <div class="absolute top-0 left-0 w-1.5 h-full bg-indigo-500"></div>
-                    <p class="text-[10px] font-black text-indigo-300 uppercase tracking-widest mb-3">Aktif Pipeline</p>
+                    <p class="text-[10px] font-black text-indigo-300 uppercase tracking-widest mb-3">Total Pipeline</p>
                     <div class="flex items-baseline gap-4">
                         <span id="active-count" class="text-5xl md:text-6xl font-black text-white tracking-tighter">0</span>
                         <span class="text-[10px] font-bold text-slate-400 uppercase">Konten</span>
                     </div>
                     <div class="mt-6">
                         <div class="flex justify-between items-center text-[9px] font-black text-slate-200 mb-2 uppercase">
-                            <span>Efisiensi</span>
+                            <span>Efisiensi Cloud</span>
                             <span id="avg-text" class="text-indigo-400">0%</span>
                         </div>
                         <div class="h-2 bg-slate-800 rounded-full overflow-hidden border border-white/5">
@@ -199,18 +203,16 @@
                     </div>
                 </div>
 
-                <!-- Agenda Hari Ini -->
                 <div class="glass-panel p-5 border-l-4 border-l-red-500">
                     <h3 class="text-[10px] font-black text-white uppercase tracking-widest mb-4 flex items-center gap-3">
-                        <i class="fa-solid fa-fire text-red-500"></i> Hari Ini
+                        <i class="fa-solid fa-fire text-red-500"></i> Deadline Hari Ini
                     </h3>
                     <div id="today-tasks" class="space-y-3 max-h-[180px] overflow-y-auto custom-scroll pr-1"></div>
                 </div>
 
-                <!-- Agenda Mendatang -->
                 <div class="glass-panel p-5 border-l-4 border-l-indigo-500">
                     <h3 class="text-[10px] font-black text-white uppercase tracking-widest mb-4 flex items-center gap-3">
-                        <i class="fa-solid fa-calendar-check text-indigo-500"></i> Mendatang
+                        <i class="fa-solid fa-calendar-check text-indigo-500"></i> Pipeline Mendatang
                     </h3>
                     <div id="upcoming-tasks" class="space-y-3 max-h-[220px] overflow-y-auto custom-scroll pr-1"></div>
                 </div>
@@ -220,15 +222,14 @@
             <main class="lg:col-span-9 space-y-6 md:space-y-8 order-1 lg:order-2">
                 <div class="glass-panel p-4 md:p-8 flex flex-col">
                     <div class="flex items-center justify-between mb-6 md:mb-10">
-                        <button onclick="changeMonth(-1)" class="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-slate-800 hover:bg-slate-700 text-white transition-all border border-white/10 flex items-center justify-center"><i class="fa-solid fa-chevron-left text-sm"></i></button>
+                        <button onclick="changeMonth(-1)" class="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center transition-all"><i class="fa-solid fa-chevron-left text-sm"></i></button>
                         <div class="text-center">
                             <h2 id="month-year" class="text-lg md:text-2xl font-black text-white tracking-tight uppercase"></h2>
-                            <p class="text-[8px] md:text-[10px] text-indigo-400 font-black uppercase tracking-[0.3em] mt-1">MASTER SCHEDULE</p>
+                            <p class="text-[8px] md:text-[10px] text-indigo-400 font-black uppercase tracking-[0.3em] mt-1">SINKRONISASI AKTIF</p>
                         </div>
-                        <button onclick="changeMonth(1)" class="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-slate-800 hover:bg-slate-700 text-white transition-all border border-white/10 flex items-center justify-center"><i class="fa-solid fa-chevron-right text-sm"></i></button>
+                        <button onclick="changeMonth(1)" class="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center transition-all"><i class="fa-solid fa-chevron-right text-sm"></i></button>
                     </div>
 
-                    <!-- Legend Indikator Warna -->
                     <div class="flex flex-wrap gap-4 mb-6 justify-center">
                         <div class="flex items-center gap-2"><div class="status-dot wait"></div><span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Wait</span></div>
                         <div class="flex items-center gap-2"><div class="status-dot proses"></div><span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Proses</span></div>
@@ -237,13 +238,13 @@
                     </div>
 
                     <div class="calendar-grid">
-                        <div class="text-center py-2 text-[9px] md:text-[11px] font-black text-slate-500 uppercase tracking-widest day-label">Min</div>
-                        <div class="text-center py-2 text-[9px] md:text-[11px] font-black text-slate-500 uppercase tracking-widest day-label">Sen</div>
-                        <div class="text-center py-2 text-[9px] md:text-[11px] font-black text-slate-500 uppercase tracking-widest day-label">Sel</div>
-                        <div class="text-center py-2 text-[9px] md:text-[11px] font-black text-slate-500 uppercase tracking-widest day-label">Rab</div>
-                        <div class="text-center py-2 text-[9px] md:text-[11px] font-black text-slate-500 uppercase tracking-widest day-label">Kam</div>
-                        <div class="text-center py-2 text-[9px] md:text-[11px] font-black text-slate-500 uppercase tracking-widest day-label">Jum</div>
-                        <div class="text-center py-2 text-[9px] md:text-[11px] font-black text-slate-500 uppercase tracking-widest day-label">Sab</div>
+                        <div class="text-center py-2 text-[9px] font-black text-slate-500 uppercase tracking-widest">Min</div>
+                        <div class="text-center py-2 text-[9px] font-black text-slate-500 uppercase tracking-widest">Sen</div>
+                        <div class="text-center py-2 text-[9px] font-black text-slate-500 uppercase tracking-widest">Sel</div>
+                        <div class="text-center py-2 text-[9px] font-black text-slate-500 uppercase tracking-widest">Rab</div>
+                        <div class="text-center py-2 text-[9px] font-black text-slate-500 uppercase tracking-widest">Kam</div>
+                        <div class="text-center py-2 text-[9px] font-black text-slate-500 uppercase tracking-widest">Jum</div>
+                        <div class="text-center py-2 text-[9px] font-black text-slate-500 uppercase tracking-widest">Sab</div>
                         <div id="calendar-days" class="contents"></div>
                     </div>
 
@@ -255,11 +256,11 @@
         </div>
     </div>
 
-    <!-- Modals (Form & Detail) -->
+    <!-- Modals -->
     <div id="formModal" class="fixed inset-0 z-[2000] hidden flex items-center justify-center p-4 bg-slate-950/95 backdrop-blur-xl">
-        <div class="glass-panel w-full max-w-lg p-8 border-indigo-500/30">
+        <div class="glass-panel w-full max-w-lg p-8">
             <h3 class="text-2xl font-black mb-1 text-white uppercase tracking-tighter">Entri Pipeline</h3>
-            <p class="text-slate-400 text-[10px] mb-8 font-bold uppercase tracking-widest">Detail Metadata Produksi</p>
+            <p class="text-slate-400 text-[10px] mb-8 font-bold uppercase tracking-widest">Otomatis Kirim ke Google Sheets</p>
             <form id="projectForm" class="space-y-5">
                 <div class="space-y-2">
                     <label class="text-[9px] font-black text-indigo-300 uppercase tracking-widest">Nama Proyek</label>
@@ -282,45 +283,36 @@
                 </div>
                 <div class="flex gap-4 pt-4">
                     <button type="button" onclick="closeModal('formModal')" class="flex-grow py-4 bg-slate-800 text-slate-300 rounded-xl font-black text-[10px] uppercase tracking-widest">Batal</button>
-                    <button type="submit" class="flex-grow py-4 btn-primary text-white rounded-xl font-black text-[10px] uppercase tracking-widest">Simpan</button>
+                    <button type="submit" class="flex-grow py-4 btn-primary text-white rounded-xl font-black text-[10px] uppercase tracking-widest">Simpan ke Cloud</button>
                 </div>
             </form>
         </div>
     </div>
 
     <div id="detailModal" class="fixed inset-0 z-[1000] hidden flex items-center justify-center p-4 bg-slate-950/95 backdrop-blur-xl">
-        <div class="glass-panel w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden border-indigo-500/20">
+        <div class="glass-panel w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
             <div class="p-6 border-b border-white/10 flex justify-between items-center bg-slate-900">
                 <h3 id="detail-date-title" class="text-xl md:text-2xl font-black text-white uppercase tracking-tighter"></h3>
                 <button onclick="closeModal('detailModal')" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-800 hover:bg-red-500 transition-all"><i class="fa-solid fa-xmark"></i></button>
             </div>
             
             <div class="flex flex-col md:flex-row h-full overflow-hidden">
-                <div class="flex-grow p-6 overflow-y-auto custom-scroll border-b md:border-b-0 md:border-r border-white/10">
+                <div class="flex-grow p-6 overflow-y-auto custom-scroll md:border-r border-white/10">
                     <p class="text-[9px] font-black text-indigo-300 uppercase tracking-widest mb-4">Daftar Agenda</p>
                     <div id="detail-list" class="space-y-4"></div>
                 </div>
-                
                 <div class="w-full md:w-80 p-6 bg-slate-900/50">
-                    <p class="text-[9px] font-black text-indigo-300 uppercase tracking-widest mb-4">Input Proyek Baru</p>
+                    <p class="text-[9px] font-black text-indigo-300 uppercase tracking-widest mb-4">Tambah Cepat</p>
                     <form id="quickAddForm" class="space-y-4">
                         <input type="hidden" id="quick-date">
-                        <div class="space-y-1">
-                            <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Nama Proyek</label>
-                            <input type="text" id="q-title" required class="w-full px-4 py-2 bg-slate-800 border border-white/5 rounded-lg text-xs text-white font-bold outline-none focus:border-indigo-500">
-                        </div>
-                        <div class="space-y-1">
-                            <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Kategori</label>
-                            <select id="q-cat" class="w-full px-4 py-2 bg-slate-800 border border-white/5 rounded-lg text-xs text-white font-bold outline-none focus:border-indigo-500">
-                                <option value="Video">Video</option>
-                                <option value="Desain">Desain</option>
-                                <option value="Sosmed">Sosmed</option>
-                                <option value="IT Hub">IT Hub</option>
-                            </select>
-                        </div>
-                        <button type="submit" class="w-full py-3 btn-primary text-white rounded-lg font-black text-[9px] uppercase tracking-widest mt-2 flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-plus text-xs"></i> Tambah Proyek
-                        </button>
+                        <input type="text" id="q-title" placeholder="Nama Proyek..." required class="w-full px-4 py-2 bg-slate-800 border border-white/5 rounded-lg text-xs text-white font-bold outline-none focus:border-indigo-500">
+                        <select id="q-cat" class="w-full px-4 py-2 bg-slate-800 border border-white/5 rounded-lg text-xs text-white font-bold outline-none">
+                            <option value="Video">Video</option>
+                            <option value="Desain">Desain</option>
+                            <option value="Sosmed">Sosmed</option>
+                            <option value="IT Hub">IT Hub</option>
+                        </select>
+                        <button type="submit" class="w-full py-3 btn-primary text-white rounded-lg font-black text-[9px] uppercase tracking-widest">Sinkronkan</button>
                     </form>
                 </div>
             </div>
@@ -328,18 +320,12 @@
     </div>
 
     <script>
-        let projects = JSON.parse(localStorage.getItem('azmania_v97_db')) || [];
+        // Update URL Apps Script Terbaru
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzW10m2jnwQBLTD56ASdv19luj1pOx692R7Q4LOCrdMQk1zvOHReatkTW8xTVTW_0YE/exec";
+        
+        let projects = JSON.parse(localStorage.getItem('azmania_v10_db')) || [];
         let currentViewDate = new Date();
         const months = ["JANUARI", "FEBRUARI", "MARET", "APRIL", "MEI", "JUNI", "JULI", "AGUSTUS", "SEPTEMBER", "OKTOBER", "NOVEMBER", "DESEMBER"];
-
-        const quotes = [
-            "LILLAHI TA'ALA: NIATKAN KERJA SEBAGAI IBADAH.",
-            "CTRL + S ADALAH KUNCI KETENANGAN BATIN.",
-            "AMANAH VISUAL: SETIAP FRAME ADALAH SAKSI.",
-            "REVISI ADALAH JALAN MENUJU KESEMPURNAAN.",
-            "HARGAI WAKTU, REZEKI AKAN MENGIKUTI.",
-            "SPIRIT AZMANIA: KOMPAK, KREATIF, BERKAH."
-        ];
 
         function init() {
             updateClock();
@@ -347,6 +333,51 @@
             renderStats();
             renderCalendar();
             renderSidebars();
+        }
+
+        function showSync(status, message = "Menyinkronkan...") {
+            const indicator = document.getElementById('syncIndicator');
+            const text = document.getElementById('syncText');
+            const icon = document.getElementById('syncIcon');
+            
+            text.innerText = message;
+            if (status) {
+                indicator.classList.add('active');
+                icon.className = "fa-solid fa-cloud-arrow-up animate-bounce text-indigo-400";
+            } else {
+                icon.className = "fa-solid fa-circle-check text-emerald-400";
+                setTimeout(() => indicator.classList.remove('active'), 2500);
+            }
+        }
+
+        // Fungsi Sinkronisasi Utama ke Google Sheets
+        async function syncToSheet(data, action = "add") {
+            showSync(true);
+            try {
+                // Menyiapkan payload
+                const payload = {
+                    action: action,
+                    id: data.id,
+                    title: data.title,
+                    date: data.date,
+                    cat: data.cat,
+                    status: data.status,
+                    timestamp: new Date().toISOString()
+                };
+
+                // Menggunakan fetch dengan mode no-cors untuk keamanan Apps Script
+                await fetch(APPS_SCRIPT_URL, {
+                    method: "POST",
+                    mode: "no-cors", 
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+                
+                showSync(false, "Berhasil Sinkron!");
+            } catch (err) {
+                console.error("Sinkronisasi Cloud Gagal:", err);
+                showSync(false, "Gagal Sinkron!");
+            }
         }
 
         function updateClock() {
@@ -357,18 +388,17 @@
         setInterval(updateClock, 1000);
 
         function renderMarquee() {
+            const quotes = ["LILLAHI TA'ALA", "GOOGLE SHEET SYNC ON", "AMANAH VISUAL", "REVISI JALAN SURGA", "SPIRIT AZMANIA"];
             const container = document.getElementById('marquee-list');
-            const content = [...quotes, ...quotes, ...quotes].map(q => `
+            container.innerHTML = [...quotes, ...quotes, ...quotes].map(q => `
                 <span class="mx-12 inline-flex items-center gap-3 font-black text-[9px] tracking-widest text-slate-300 uppercase">
-                    <i class="fa-solid fa-star text-amber-400 text-[6px]"></i> ${q}
+                    <i class="fa-solid fa-cloud text-indigo-400 text-[6px]"></i> ${q}
                 </span>
             `).join('');
-            container.innerHTML = content;
         }
 
         function renderStats() {
-            const active = projects.filter(p => p.status !== 'publish');
-            document.getElementById('active-count').innerText = active.length;
+            document.getElementById('active-count').innerText = projects.length;
             if (projects.length === 0) {
                 document.getElementById('avg-bar').style.width = '0%';
                 document.getElementById('avg-text').innerText = '0%';
@@ -382,7 +412,6 @@
 
         function getPriorityStatus(dayTasks) {
             if (dayTasks.length === 0) return null;
-            // Prioritas warna jika ada beberapa status di hari yang sama
             if (dayTasks.some(p => p.status === 'wait')) return 'has-wait';
             if (dayTasks.some(p => p.status === 'proses')) return 'has-proses';
             if (dayTasks.some(p => p.status === 'selesai')) return 'has-selesai';
@@ -396,163 +425,128 @@
             const year = currentViewDate.getFullYear();
             const month = currentViewDate.getMonth();
             document.getElementById('month-year').innerText = `${months[month]} ${year}`;
-            
             const firstDay = new Date(year, month, 1).getDay();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
-            
             const realToday = new Date();
             const realDateStr = `${realToday.getFullYear()}-${(realToday.getMonth() + 1).toString().padStart(2, '0')}-${realToday.getDate().toString().padStart(2, '0')}`;
 
             for (let i = 0; i < firstDay; i++) grid.innerHTML += `<div class="calendar-day opacity-0 pointer-events-none"></div>`;
-
             for (let d = 1; d <= daysInMonth; d++) {
                 const dateStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${d.toString().padStart(2, '0')}`;
                 const dayTasks = projects.filter(p => p.date === dateStr);
-                const isToday = dateStr === realDateStr;
                 const statusClass = getPriorityStatus(dayTasks);
+                const isToday = dateStr === realDateStr;
 
                 const dayEl = document.createElement('div');
                 dayEl.className = `calendar-day ${isToday ? 'today-glow' : ''} ${statusClass ? statusClass : ''}`;
                 dayEl.onclick = () => openDetail(dateStr);
-                
                 dayEl.innerHTML = `<span class="text-sm md:text-xl font-black ${isToday ? 'text-white' : (statusClass ? 'text-white' : 'text-slate-500')}">${d}</span>`;
                 grid.appendChild(dayEl);
             }
         }
 
         function renderSidebars() {
-            const today = new Date();
-            const todayStr = `${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getDate().toString().padStart(2, '0')}`;
-            
+            const todayStr = new Date().toISOString().split('T')[0];
             const todayTasks = projects.filter(p => p.date === todayStr);
             const todayContainer = document.getElementById('today-tasks');
-            if (todayTasks.length === 0) {
-                todayContainer.innerHTML = `<p class="text-[9px] text-slate-500 font-bold uppercase text-center py-4 tracking-widest">Antrean Kosong</p>`;
-            } else {
-                todayContainer.innerHTML = todayTasks.map(p => `
-                    <div class="bg-slate-800/60 p-3 rounded-xl border border-white/5 flex items-center gap-3 cursor-pointer" onclick="openDetail('${p.date}')">
-                        <div class="status-dot ${p.status} w-2 h-2"></div>
-                        <p class="text-[10px] font-black text-white truncate uppercase tracking-tight">${p.title}</p>
-                    </div>
-                `).join('');
-            }
+            todayContainer.innerHTML = todayTasks.length === 0 ? `<p class="text-[9px] text-center text-slate-500 py-4 uppercase">Tidak ada deadline</p>` :
+                todayTasks.map(p => `<div class="bg-slate-800/60 p-3 rounded-xl flex items-center gap-3"><div class="status-dot ${p.status}"></div><p class="text-[10px] font-black truncate uppercase tracking-tighter">${p.title}</p></div>`).join('');
 
             const upcomingContainer = document.getElementById('upcoming-tasks');
-            const upcomingTasks = projects.filter(p => p.date > todayStr).sort((a,b) => a.date.localeCompare(b.date));
-
-            if (upcomingTasks.length === 0) {
-                upcomingContainer.innerHTML = `<p class="text-[9px] text-slate-500 font-bold uppercase text-center py-4 tracking-widest">Belum ada rencana</p>`;
-            } else {
-                upcomingContainer.innerHTML = upcomingTasks.slice(0, 10).map(p => {
-                    const d = new Date(p.date);
-                    const formattedDate = d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short' }).toUpperCase();
-                    return `
-                        <div class="bg-slate-800/40 p-3 rounded-xl border border-white/5 flex flex-col gap-1 cursor-pointer hover:bg-slate-800/80 transition-all" onclick="openDetail('${p.date}')">
-                            <div class="flex justify-between items-center">
-                                <span class="text-[8px] font-black text-indigo-400 tracking-tighter">${formattedDate}</span>
-                                <div class="status-dot ${p.status} w-1.5 h-1.5"></div>
-                            </div>
-                            <p class="text-[10px] font-black text-slate-200 truncate uppercase tracking-tight">${p.title}</p>
-                        </div>
-                    `;
-                }).join('');
-            }
+            const upcoming = projects.filter(p => p.date > todayStr).sort((a,b) => a.date.localeCompare(b.date));
+            upcomingContainer.innerHTML = upcoming.length === 0 ? `<p class="text-[9px] text-center text-slate-500 py-4 uppercase">Jadwal bersih</p>` :
+                upcoming.slice(0, 5).map(p => `<div class="bg-slate-800/40 p-3 rounded-xl"><p class="text-[8px] font-black text-indigo-400">${p.date}</p><p class="text-[10px] font-black truncate uppercase text-white tracking-tighter">${p.title}</p></div>`).join('');
         }
 
         function openDetail(date) {
             const list = document.getElementById('detail-list');
             const dayTasks = projects.filter(p => p.date === date);
-            
-            document.getElementById('detail-date-title').innerText = new Date(date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase();
+            document.getElementById('detail-date-title').innerText = date;
             document.getElementById('quick-date').value = date;
-            
-            list.innerHTML = dayTasks.length === 0 ? 
-                `<div class="flex flex-col items-center justify-center py-10 opacity-30">
-                    <i class="fa-solid fa-calendar-day text-5xl mb-3"></i>
-                    <p class="text-center text-slate-500 font-black uppercase text-[10px] tracking-[0.2em]">Tidak ada agenda</p>
-                </div>` :
-                dayTasks.map(p => `
-                    <div class="bg-slate-800 p-4 rounded-2xl border border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div class="flex items-center gap-3 min-w-0">
-                            <div class="status-dot ${p.status} w-2 h-2 shrink-0"></div>
-                            <div class="truncate">
-                                <p class="text-[8px] font-black text-indigo-400 uppercase tracking-widest leading-none mb-1">${p.cat}</p>
-                                <h4 class="text-sm font-black text-white uppercase truncate">${p.title}</h4>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-2 justify-end">
-                            <select onchange="updateStatus(${p.id}, this.value, '${date}')" class="bg-slate-900 text-[10px] font-black text-white px-3 py-2 rounded-lg outline-none border border-white/10">
-                                <option value="wait" ${p.status==='wait'?'selected':''}>WAIT</option>
-                                <option value="proses" ${p.status==='proses'?'selected':''}>PROSES</option>
-                                <option value="selesai" ${p.status==='selesai'?'selected':''}>DONE</option>
-                                <option value="publish" ${p.status==='publish'?'selected':''}>PUBLISH</option>
-                            </select>
-                            <button onclick="deleteProject(${p.id}, '${date}')" class="w-9 h-9 flex items-center justify-center rounded-lg bg-red-600/10 text-red-500 hover:bg-red-600 hover:text-white transition-all"><i class="fa-solid fa-trash-can text-xs"></i></button>
-                        </div>
+            list.innerHTML = dayTasks.map(p => `
+                <div class="bg-slate-800 p-4 rounded-2xl flex items-center justify-between border border-white/5">
+                    <div class="flex items-center gap-3">
+                        <div class="status-dot ${p.status} w-2 h-2"></div>
+                        <div><p class="text-[8px] font-black text-indigo-400 uppercase tracking-widest">${p.cat}</p><h4 class="text-sm font-black text-white uppercase">${p.title}</h4></div>
                     </div>
-                `).join('');
-            
+                    <div class="flex items-center gap-2">
+                        <select onchange="updateStatus(${p.id}, this.value, '${date}')" class="bg-slate-900 text-[10px] font-black p-2 rounded-lg border border-white/10 text-white outline-none focus:border-indigo-500">
+                            <option value="wait" ${p.status==='wait'?'selected':''}>WAIT</option>
+                            <option value="proses" ${p.status==='proses'?'selected':''}>PROSES</option>
+                            <option value="selesai" ${p.status==='selesai'?'selected':''}>DONE</option>
+                            <option value="publish" ${p.status==='publish'?'selected':''}>PUBLISH</option>
+                        </select>
+                        <button onclick="deleteProject(${p.id}, '${date}')" class="w-9 h-9 rounded-lg bg-red-600/10 text-red-500 hover:bg-red-500 hover:text-white transition-all"><i class="fa-solid fa-trash-can"></i></button>
+                    </div>
+                </div>
+            `).join('') || `<div class="flex flex-col items-center justify-center py-12 opacity-30"><i class="fa-solid fa-calendar-day text-4xl mb-3"></i><p class="text-[10px] font-black uppercase tracking-widest">Tidak ada agenda</p></div>`;
             document.getElementById('detailModal').classList.remove('hidden');
         }
 
-        document.getElementById('quickAddForm').onsubmit = (e) => {
-            e.preventDefault();
-            const date = document.getElementById('quick-date').value;
-            projects.push({
-                id: Date.now(),
-                title: document.getElementById('q-title').value,
-                date: date,
-                cat: document.getElementById('q-cat').value,
-                status: 'wait'
-            });
-            save();
-            openDetail(date);
-            e.target.reset();
-            document.getElementById('quick-date').value = date;
-        };
-
-        function updateStatus(id, status, date) {
+        async function updateStatus(id, status, date) {
+            const project = projects.find(p => p.id === id);
+            if (!project) return;
             projects = projects.map(p => p.id === id ? {...p, status} : p);
-            save();
+            saveLocal();
             openDetail(date);
+            // Sinkronisasi pembaruan status ke Google Sheets
+            await syncToSheet({...project, status}, "update");
         }
 
-        function deleteProject(id, date) {
+        async function deleteProject(id, date) {
+            const projectToDelete = projects.find(p => p.id === id);
+            if (!projectToDelete) return;
             projects = projects.filter(p => p.id !== id);
-            save();
+            saveLocal();
             openDetail(date);
+            // Sinkronisasi penghapusan ke Google Sheets
+            await syncToSheet(projectToDelete, "delete");
         }
 
-        function changeMonth(dir) {
-            currentViewDate.setMonth(currentViewDate.getMonth() + dir);
-            renderCalendar();
-        }
-
-        function openFormModal() { 
-            document.getElementById('p-date').value = new Date().toISOString().split('T')[0];
-            document.getElementById('formModal').classList.remove('hidden'); 
-        }
-
-        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
-
-        document.getElementById('projectForm').onsubmit = (e) => {
+        document.getElementById('projectForm').onsubmit = async (e) => {
             e.preventDefault();
-            projects.push({
+            const newProject = {
                 id: Date.now(),
                 title: document.getElementById('p-title').value,
                 date: document.getElementById('p-date').value,
                 cat: document.getElementById('p-cat').value,
                 status: 'wait'
-            });
-            save();
+            };
+            projects.push(newProject);
+            saveLocal();
             closeModal('formModal');
             e.target.reset();
+            // Sinkronisasi data baru ke Google Sheets
+            await syncToSheet(newProject, "add");
         };
 
-        function save() {
-            localStorage.setItem('azmania_v97_db', JSON.stringify(projects));
-            init(); 
+        document.getElementById('quickAddForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const date = document.getElementById('quick-date').value;
+            const newProject = {
+                id: Date.now(),
+                title: document.getElementById('q-title').value,
+                date: date,
+                cat: document.getElementById('q-cat').value,
+                status: 'wait'
+            };
+            projects.push(newProject);
+            saveLocal();
+            openDetail(date);
+            e.target.reset();
+            document.getElementById('quick-date').value = date;
+            // Sinkronisasi data baru ke Google Sheets
+            await syncToSheet(newProject, "add");
+        };
+
+        function saveLocal() {
+            localStorage.setItem('azmania_v10_db', JSON.stringify(projects));
+            init();
         }
+
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+        function openFormModal() { document.getElementById('formModal').classList.remove('hidden'); }
+        function changeMonth(dir) { currentViewDate.setMonth(currentViewDate.getMonth() + dir); renderCalendar(); }
 
         window.onload = init;
     </script>
