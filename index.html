@@ -73,7 +73,6 @@
             border-color: white;
         }
 
-        /* Status Colors */
         .has-wait { background: rgba(251, 191, 36, 0.25) !important; border: 1px solid rgba(251, 191, 36, 0.5) !important; }
         .has-proses { background: rgba(96, 165, 250, 0.25) !important; border: 1px solid rgba(96, 165, 250, 0.5) !important; }
         .has-selesai { background: rgba(52, 211, 153, 0.25) !important; border: 1px solid rgba(52, 211, 153, 0.5) !important; }
@@ -111,7 +110,7 @@
         .marquee-content {
             display: inline-block;
             white-space: nowrap;
-            animation: marquee-slow 40s linear infinite;
+            animation: marquee-slow 60s linear infinite;
         }
 
         @keyframes marquee-slow {
@@ -147,14 +146,12 @@
 </head>
 <body class="p-3 md:p-8">
 
-    <!-- Sync Alert Indicator -->
     <div id="syncIndicator" class="sync-indicator">
         <i id="syncIcon" class="fa-solid fa-cloud-arrow-up animate-bounce text-indigo-400"></i>
         <span id="syncText" class="text-slate-200 tracking-widest">Menyinkronkan...</span>
     </div>
 
     <div class="max-w-7xl mx-auto">
-        <!-- Header -->
         <header class="flex flex-col md:flex-row justify-between items-center mb-6 md:mb-10 gap-6">
             <div class="flex items-center gap-4 md:gap-5">
                 <div class="p-3 md:p-4 bg-slate-800 rounded-2xl border border-white/10 shadow-xl">
@@ -183,7 +180,6 @@
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8">
-            <!-- Sidebar -->
             <aside class="lg:col-span-3 space-y-6 md:space-y-8 order-2 lg:order-1">
                 <div class="glass-panel p-6 md:p-8 relative overflow-hidden">
                     <div class="absolute top-0 left-0 w-1.5 h-full bg-indigo-500"></div>
@@ -218,7 +214,6 @@
                 </div>
             </aside>
 
-            <!-- Main Area -->
             <main class="lg:col-span-9 space-y-6 md:space-y-8 order-1 lg:order-2">
                 <div class="glass-panel p-4 md:p-8 flex flex-col">
                     <div class="flex items-center justify-between mb-6 md:mb-10">
@@ -320,16 +315,58 @@
     </div>
 
     <script>
-        // Update URL Apps Script Terbaru
+        /** * GANTI URL DI BAWAH INI dengan URL Web App dari Google Apps Script Anda 
+         * Formatnya seperti: https://script.google.com/macros/s/ABCDEFG.../exec
+         */
         const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzW10m2jnwQBLTD56ASdv19luj1pOx692R7Q4LOCrdMQk1zvOHReatkTW8xTVTW_0YE/exec";
         
         let projects = JSON.parse(localStorage.getItem('azmania_v10_db')) || [];
         let currentViewDate = new Date();
         const months = ["JANUARI", "FEBRUARI", "MARET", "APRIL", "MEI", "JUNI", "JULI", "AGUSTUS", "SEPTEMBER", "OKTOBER", "NOVEMBER", "DESEMBER"];
 
+        // Fungsi Helper untuk melakukan Fetch dengan Retry (Exponential Backoff)
+        async function fetchWithRetry(url, options = {}, retries = 5, backoff = 1000) {
+            try {
+                const response = await fetch(url, options);
+                if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
+                return response;
+            } catch (err) {
+                if (retries > 0) {
+                    await new Promise(resolve => setTimeout(resolve, backoff));
+                    return fetchWithRetry(url, options, retries - 1, backoff * 2);
+                }
+                throw err;
+            }
+        }
+
+        async function fetchFromCloud() {
+            if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes("GANTI_URL")) return;
+            
+            showSync(true, "Menyelaraskan Semesta...");
+            try {
+                const response = await fetchWithRetry(`${APPS_SCRIPT_URL}?action=read`);
+                const data = await response.json();
+                if (data && Array.isArray(data)) {
+                    projects = data;
+                    localStorage.setItem('azmania_v10_db', JSON.stringify(projects));
+                    renderAll();
+                    showSync(false, "Sinergi Cloud Berhasil");
+                }
+            } catch (err) {
+                console.error("Gagal ambil data cloud:", err);
+                showSync(false, "Gagal Menjangkau Cloud (Offline)");
+            }
+        }
+
         function init() {
             updateClock();
             renderMarquee();
+            renderAll();
+            // Jalankan sinkronisasi cloud
+            fetchFromCloud();
+        }
+
+        function renderAll() {
             renderStats();
             renderCalendar();
             renderSidebars();
@@ -350,33 +387,25 @@
             }
         }
 
-        // Fungsi Sinkronisasi Utama ke Google Sheets
         async function syncToSheet(data, action = "add") {
-            showSync(true);
-            try {
-                // Menyiapkan payload
-                const payload = {
-                    action: action,
-                    id: data.id,
-                    title: data.title,
-                    date: data.date,
-                    cat: data.cat,
-                    status: data.status,
-                    timestamp: new Date().toISOString()
-                };
+            if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes("GANTI_URL")) return;
 
-                // Menggunakan fetch dengan mode no-cors untuk keamanan Apps Script
+            showSync(true, "Membangun Jejak Digital...");
+            try {
+                const payload = { action: action, ...data };
+                // Gunakan POST dengan mode no-cors untuk Apps Script
                 await fetch(APPS_SCRIPT_URL, {
                     method: "POST",
                     mode: "no-cors", 
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(payload)
                 });
-                
-                showSync(false, "Berhasil Sinkron!");
+                showSync(false, "Terpahat Abadi di Cloud");
+                // Setelah kirim, coba refresh data terbaru
+                setTimeout(fetchFromCloud, 2000);
             } catch (err) {
-                console.error("Sinkronisasi Cloud Gagal:", err);
-                showSync(false, "Gagal Sinkron!");
+                console.error("Sinkronisasi Gagal:", err);
+                showSync(false, "Gagal Menjangkau Langit");
             }
         }
 
@@ -388,11 +417,19 @@
         setInterval(updateClock, 1000);
 
         function renderMarquee() {
-            const quotes = ["LILLAHI TA'ALA", "GOOGLE SHEET SYNC ON", "AMANAH VISUAL", "REVISI JALAN SURGA", "SPIRIT AZMANIA"];
+            const quotes = [
+                "MELUKIS MAKNA DI SETIAP PIXEL", 
+                "LILLAHI TA'ALA DALAM SETIAP KARYA", 
+                "SINERGI TANPA BATAS ANTAR PERANGKAT", 
+                "DI MANAPUN KAU BERADA, KARYA KITA TETAP SATU", 
+                "AZMANIA: MERAWAT MIMPI DENGAN DISIPLIN DIGITAL",
+                "SETIAP DEADLINE ADALAH LANGKAH MENUJU SURGA KARYA",
+                "KEJUJURAN VISUAL ADALAH IDENTITAS KITA"
+            ];
             const container = document.getElementById('marquee-list');
-            container.innerHTML = [...quotes, ...quotes, ...quotes].map(q => `
-                <span class="mx-12 inline-flex items-center gap-3 font-black text-[9px] tracking-widest text-slate-300 uppercase">
-                    <i class="fa-solid fa-cloud text-indigo-400 text-[6px]"></i> ${q}
+            container.innerHTML = [...quotes, ...quotes].map(q => `
+                <span class="mx-16 inline-flex items-center gap-4 font-black text-[10px] tracking-[0.3em] text-slate-300 uppercase italic">
+                    <i class="fa-solid fa-star text-indigo-400 text-[6px]"></i> ${q}
                 </span>
             `).join('');
         }
@@ -449,12 +486,12 @@
             const todayStr = new Date().toISOString().split('T')[0];
             const todayTasks = projects.filter(p => p.date === todayStr);
             const todayContainer = document.getElementById('today-tasks');
-            todayContainer.innerHTML = todayTasks.length === 0 ? `<p class="text-[9px] text-center text-slate-500 py-4 uppercase">Tidak ada deadline</p>` :
+            todayContainer.innerHTML = todayTasks.length === 0 ? `<p class="text-[9px] text-center text-slate-500 py-4 uppercase italic">Halaman Hari Ini Masih Putih</p>` :
                 todayTasks.map(p => `<div class="bg-slate-800/60 p-3 rounded-xl flex items-center gap-3"><div class="status-dot ${p.status}"></div><p class="text-[10px] font-black truncate uppercase tracking-tighter">${p.title}</p></div>`).join('');
 
             const upcomingContainer = document.getElementById('upcoming-tasks');
             const upcoming = projects.filter(p => p.date > todayStr).sort((a,b) => a.date.localeCompare(b.date));
-            upcomingContainer.innerHTML = upcoming.length === 0 ? `<p class="text-[9px] text-center text-slate-500 py-4 uppercase">Jadwal bersih</p>` :
+            upcomingContainer.innerHTML = upcoming.length === 0 ? `<p class="text-[9px] text-center text-slate-500 py-4 uppercase italic">Masa Depan Masih Terbuka</p>` :
                 upcoming.slice(0, 5).map(p => `<div class="bg-slate-800/40 p-3 rounded-xl"><p class="text-[8px] font-black text-indigo-400">${p.date}</p><p class="text-[10px] font-black truncate uppercase text-white tracking-tighter">${p.title}</p></div>`).join('');
         }
 
@@ -479,7 +516,7 @@
                         <button onclick="deleteProject(${p.id}, '${date}')" class="w-9 h-9 rounded-lg bg-red-600/10 text-red-500 hover:bg-red-500 hover:text-white transition-all"><i class="fa-solid fa-trash-can"></i></button>
                     </div>
                 </div>
-            `).join('') || `<div class="flex flex-col items-center justify-center py-12 opacity-30"><i class="fa-solid fa-calendar-day text-4xl mb-3"></i><p class="text-[10px] font-black uppercase tracking-widest">Tidak ada agenda</p></div>`;
+            `).join('') || `<div class="flex flex-col items-center justify-center py-12 opacity-30"><i class="fa-solid fa-calendar-day text-4xl mb-3"></i><p class="text-[10px] font-black uppercase tracking-widest italic">Kanvas Belum Terisi</p></div>`;
             document.getElementById('detailModal').classList.remove('hidden');
         }
 
@@ -489,7 +526,6 @@
             projects = projects.map(p => p.id === id ? {...p, status} : p);
             saveLocal();
             openDetail(date);
-            // Sinkronisasi pembaruan status ke Google Sheets
             await syncToSheet({...project, status}, "update");
         }
 
@@ -499,7 +535,6 @@
             projects = projects.filter(p => p.id !== id);
             saveLocal();
             openDetail(date);
-            // Sinkronisasi penghapusan ke Google Sheets
             await syncToSheet(projectToDelete, "delete");
         }
 
@@ -516,7 +551,6 @@
             saveLocal();
             closeModal('formModal');
             e.target.reset();
-            // Sinkronisasi data baru ke Google Sheets
             await syncToSheet(newProject, "add");
         };
 
@@ -535,13 +569,12 @@
             openDetail(date);
             e.target.reset();
             document.getElementById('quick-date').value = date;
-            // Sinkronisasi data baru ke Google Sheets
             await syncToSheet(newProject, "add");
         };
 
         function saveLocal() {
             localStorage.setItem('azmania_v10_db', JSON.stringify(projects));
-            init();
+            renderAll();
         }
 
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
