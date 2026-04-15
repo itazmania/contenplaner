@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AZMANIA CONTENT HUB - v9.8 Cloud Version</title>
+    <title>AZMANIA CONTENT HUB - v9.8 Multi-Color Status</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
@@ -148,6 +148,7 @@
 <body class="p-3 md:p-8">
 
     <div class="max-w-7xl mx-auto">
+        <!-- Header -->
         <header class="flex flex-col md:flex-row justify-between items-center mb-6 md:mb-10 gap-6">
             <div class="flex items-center gap-4 md:gap-5">
                 <div class="p-3 md:p-4 bg-slate-800 rounded-2xl border border-white/10 shadow-xl">
@@ -167,7 +168,7 @@
                         <div id="clock-time" class="text-lg md:text-2xl font-black text-white tracking-widest font-mono">00:00:00</div>
                         <div id="clock-date" class="text-[8px] md:text-[10px] font-bold text-slate-300 uppercase tracking-widest">LOADING...</div>
                     </div>
-                    <div id="server-dot" class="hidden md:block w-2.5 h-2.5 rounded-full bg-slate-500 shadow-[0_0_10px_#64748b]"></div>
+                    <div class="hidden md:block w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_10px_#10b981] animate-pulse"></div>
                 </div>
                 <div class="h-8 md:h-10 w-px bg-white/10"></div>
                 <button onclick="openFormModal()" class="btn-primary px-4 md:px-7 py-2 md:py-3 rounded-xl md:rounded-2xl font-black text-[9px] md:text-[10px] uppercase tracking-widest flex items-center gap-2 active:scale-95 transition-transform">
@@ -177,7 +178,9 @@
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8">
+            <!-- Sidebar -->
             <aside class="lg:col-span-3 space-y-6 md:space-y-8 order-2 lg:order-1">
+                <!-- Status Card -->
                 <div class="glass-panel p-6 md:p-8 relative overflow-hidden">
                     <div class="absolute top-0 left-0 w-1.5 h-full bg-indigo-500"></div>
                     <p class="text-[10px] font-black text-indigo-300 uppercase tracking-widest mb-3">Aktif Pipeline</p>
@@ -196,6 +199,7 @@
                     </div>
                 </div>
 
+                <!-- Agenda Hari Ini -->
                 <div class="glass-panel p-5 border-l-4 border-l-red-500">
                     <h3 class="text-[10px] font-black text-white uppercase tracking-widest mb-4 flex items-center gap-3">
                         <i class="fa-solid fa-fire text-red-500"></i> Hari Ini
@@ -203,6 +207,7 @@
                     <div id="today-tasks" class="space-y-3 max-h-[180px] overflow-y-auto custom-scroll pr-1"></div>
                 </div>
 
+                <!-- Agenda Mendatang -->
                 <div class="glass-panel p-5 border-l-4 border-l-indigo-500">
                     <h3 class="text-[10px] font-black text-white uppercase tracking-widest mb-4 flex items-center gap-3">
                         <i class="fa-solid fa-calendar-check text-indigo-500"></i> Mendatang
@@ -211,6 +216,7 @@
                 </div>
             </aside>
 
+            <!-- Main Area -->
             <main class="lg:col-span-9 space-y-6 md:space-y-8 order-1 lg:order-2">
                 <div class="glass-panel p-4 md:p-8 flex flex-col">
                     <div class="flex items-center justify-between mb-6 md:mb-10">
@@ -222,6 +228,7 @@
                         <button onclick="changeMonth(1)" class="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-slate-800 hover:bg-slate-700 text-white transition-all border border-white/10 flex items-center justify-center"><i class="fa-solid fa-chevron-right text-sm"></i></button>
                     </div>
 
+                    <!-- Legend Indikator Warna -->
                     <div class="flex flex-wrap gap-4 mb-6 justify-center">
                         <div class="flex items-center gap-2"><div class="status-dot wait"></div><span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Wait</span></div>
                         <div class="flex items-center gap-2"><div class="status-dot proses"></div><span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Proses</span></div>
@@ -248,6 +255,7 @@
         </div>
     </div>
 
+    <!-- Modals (Form & Detail) -->
     <div id="formModal" class="fixed inset-0 z-[2000] hidden flex items-center justify-center p-4 bg-slate-950/95 backdrop-blur-xl">
         <div class="glass-panel w-full max-w-lg p-8 border-indigo-500/30">
             <h3 class="text-2xl font-black mb-1 text-white uppercase tracking-tighter">Entri Pipeline</h3>
@@ -274,7 +282,7 @@
                 </div>
                 <div class="flex gap-4 pt-4">
                     <button type="button" onclick="closeModal('formModal')" class="flex-grow py-4 bg-slate-800 text-slate-300 rounded-xl font-black text-[10px] uppercase tracking-widest">Batal</button>
-                    <button type="submit" id="btn-save" class="flex-grow py-4 btn-primary text-white rounded-xl font-black text-[10px] uppercase tracking-widest">Simpan</button>
+                    <button type="submit" class="flex-grow py-4 btn-primary text-white rounded-xl font-black text-[10px] uppercase tracking-widest">Simpan</button>
                 </div>
             </form>
         </div>
@@ -286,11 +294,13 @@
                 <h3 id="detail-date-title" class="text-xl md:text-2xl font-black text-white uppercase tracking-tighter"></h3>
                 <button onclick="closeModal('detailModal')" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-800 hover:bg-red-500 transition-all"><i class="fa-solid fa-xmark"></i></button>
             </div>
+            
             <div class="flex flex-col md:flex-row h-full overflow-hidden">
                 <div class="flex-grow p-6 overflow-y-auto custom-scroll border-b md:border-b-0 md:border-r border-white/10">
                     <p class="text-[9px] font-black text-indigo-300 uppercase tracking-widest mb-4">Daftar Agenda</p>
                     <div id="detail-list" class="space-y-4"></div>
                 </div>
+                
                 <div class="w-full md:w-80 p-6 bg-slate-900/50">
                     <p class="text-[9px] font-black text-indigo-300 uppercase tracking-widest mb-4">Input Proyek Baru</p>
                     <form id="quickAddForm" class="space-y-4">
@@ -308,7 +318,7 @@
                                 <option value="IT Hub">IT Hub</option>
                             </select>
                         </div>
-                        <button type="submit" id="btn-quick" class="w-full py-3 btn-primary text-white rounded-lg font-black text-[9px] uppercase tracking-widest mt-2 flex items-center justify-center gap-2">
+                        <button type="submit" class="w-full py-3 btn-primary text-white rounded-lg font-black text-[9px] uppercase tracking-widest mt-2 flex items-center justify-center gap-2">
                             <i class="fa-solid fa-plus text-xs"></i> Tambah Proyek
                         </button>
                     </form>
@@ -318,104 +328,233 @@
     </div>
 
     <script>
-    // 1. URL GOOGLE APPS SCRIPT ANDA
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbzW10m2jnwQBLTD56ASdv19luj1pOx692R7Q4LOCrdMQk1zvOHReatkTW8xTVTW_0YE/exec';
-    
-    let projects = [];
-    let currentViewDate = new Date();
-    const months = ["JANUARI", "FEBRUARI", "MARET", "APRIL", "MEI", "JUNI", "JULI", "AGUSTUS", "SEPTEMBER", "OKTOBER", "NOVEMBER", "DESEMBER"];
-    const quotes = ["LILLAHI TA'ALA", "CTRL + S ADALAH KUNCI", "AMANAH VISUAL", "REVISI ADALAH JALAN", "HARGAI WAKTU", "SPIRIT AZMANIA"];
+        let projects = JSON.parse(localStorage.getItem('azmania_v97_db')) || [];
+        let currentViewDate = new Date();
+        const months = ["JANUARI", "FEBRUARI", "MARET", "APRIL", "MEI", "JUNI", "JULI", "AGUSTUS", "SEPTEMBER", "OKTOBER", "NOVEMBER", "DESEMBER"];
 
-    // FUNGSI INIT (DIPERBAIKI UNTUK CLOUD)
-    async function init() {
-        updateClock();
-        renderMarquee();
-        
-        try {
-            // Ambil data dari Google Sheets
-            const response = await fetch(scriptURL);
-            const dataCloud = await response.json();
-            
-            // Mapping agar formatnya sama persis dengan projectForm Anda
-            projects = dataCloud.map((item, index) => ({
-                id: index,
-                title: item.nama,
-                date: item.deadline, // Pastikan di Sheets formatnya YYYY-MM-DD
-                cat: item.kategori,
-                status: (item.status || 'wait').toLowerCase()
-            }));
+        const quotes = [
+            "LILLAHI TA'ALA: NIATKAN KERJA SEBAGAI IBADAH.",
+            "CTRL + S ADALAH KUNCI KETENANGAN BATIN.",
+            "AMANAH VISUAL: SETIAP FRAME ADALAH SAKSI.",
+            "REVISI ADALAH JALAN MENUJU KESEMPURNAAN.",
+            "HARGAI WAKTU, REZEKI AKAN MENGIKUTI.",
+            "SPIRIT AZMANIA: KOMPAK, KREATIF, BERKAH."
+        ];
 
-            // Jalankan fungsi render asli Anda
+        function init() {
+            updateClock();
+            renderMarquee();
             renderStats();
             renderCalendar();
             renderSidebars();
+        }
+
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock-time').innerText = now.toLocaleTimeString('id-ID', { hour12: false });
+            document.getElementById('clock-date').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long' }).toUpperCase();
+        }
+        setInterval(updateClock, 1000);
+
+        function renderMarquee() {
+            const container = document.getElementById('marquee-list');
+            const content = [...quotes, ...quotes, ...quotes].map(q => `
+                <span class="mx-12 inline-flex items-center gap-3 font-black text-[9px] tracking-widest text-slate-300 uppercase">
+                    <i class="fa-solid fa-star text-amber-400 text-[6px]"></i> ${q}
+                </span>
+            `).join('');
+            container.innerHTML = content;
+        }
+
+        function renderStats() {
+            const active = projects.filter(p => p.status !== 'publish');
+            document.getElementById('active-count').innerText = active.length;
+            if (projects.length === 0) {
+                document.getElementById('avg-bar').style.width = '0%';
+                document.getElementById('avg-text').innerText = '0%';
+                return;
+            }
+            const weights = { 'wait': 10, 'proses': 50, 'selesai': 90, 'publish': 100 };
+            const avg = Math.round(projects.reduce((acc, p) => acc + (weights[p.status] || 0), 0) / projects.length);
+            document.getElementById('avg-bar').style.width = avg + '%';
+            document.getElementById('avg-text').innerText = avg + '%';
+        }
+
+        function getPriorityStatus(dayTasks) {
+            if (dayTasks.length === 0) return null;
+            // Prioritas warna jika ada beberapa status di hari yang sama
+            if (dayTasks.some(p => p.status === 'wait')) return 'has-wait';
+            if (dayTasks.some(p => p.status === 'proses')) return 'has-proses';
+            if (dayTasks.some(p => p.status === 'selesai')) return 'has-selesai';
+            if (dayTasks.some(p => p.status === 'publish')) return 'has-publish';
+            return null;
+        }
+
+        function renderCalendar() {
+            const grid = document.getElementById('calendar-days');
+            grid.innerHTML = '';
+            const year = currentViewDate.getFullYear();
+            const month = currentViewDate.getMonth();
+            document.getElementById('month-year').innerText = `${months[month]} ${year}`;
             
-            console.log("Data Cloud Berhasil Dimuat");
-        } catch (error) {
-            console.error("Gagal ambil data:", error);
-            // Backup ke localStorage jika cloud gagal (opsional)
-            const localData = localStorage.getItem('azmania_v97_db');
-            if (localData) {
-                projects = JSON.parse(localData);
-                renderStats();
-                renderCalendar();
-                renderSidebars();
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            
+            const realToday = new Date();
+            const realDateStr = `${realToday.getFullYear()}-${(realToday.getMonth() + 1).toString().padStart(2, '0')}-${realToday.getDate().toString().padStart(2, '0')}`;
+
+            for (let i = 0; i < firstDay; i++) grid.innerHTML += `<div class="calendar-day opacity-0 pointer-events-none"></div>`;
+
+            for (let d = 1; d <= daysInMonth; d++) {
+                const dateStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${d.toString().padStart(2, '0')}`;
+                const dayTasks = projects.filter(p => p.date === dateStr);
+                const isToday = dateStr === realDateStr;
+                const statusClass = getPriorityStatus(dayTasks);
+
+                const dayEl = document.createElement('div');
+                dayEl.className = `calendar-day ${isToday ? 'today-glow' : ''} ${statusClass ? statusClass : ''}`;
+                dayEl.onclick = () => openDetail(dateStr);
+                
+                dayEl.innerHTML = `<span class="text-sm md:text-xl font-black ${isToday ? 'text-white' : (statusClass ? 'text-white' : 'text-slate-500')}">${d}</span>`;
+                grid.appendChild(dayEl);
             }
         }
-    }
 
-    // FUNGSI SIMPAN (DIPERBAIKI UNTUK CLOUD)
-    document.getElementById('projectForm').onsubmit = async (e) => {
-        e.preventDefault();
-        
-        const btn = e.target.querySelector('button[type="submit"]');
-        const originalText = btn.innerText;
-        btn.innerText = "SINKRON...";
-        btn.disabled = true;
+        function renderSidebars() {
+            const today = new Date();
+            const todayStr = `${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getDate().toString().padStart(2, '0')}`;
+            
+            const todayTasks = projects.filter(p => p.date === todayStr);
+            const todayContainer = document.getElementById('today-tasks');
+            if (todayTasks.length === 0) {
+                todayContainer.innerHTML = `<p class="text-[9px] text-slate-500 font-bold uppercase text-center py-4 tracking-widest">Antrean Kosong</p>`;
+            } else {
+                todayContainer.innerHTML = todayTasks.map(p => `
+                    <div class="bg-slate-800/60 p-3 rounded-xl border border-white/5 flex items-center gap-3 cursor-pointer" onclick="openDetail('${p.date}')">
+                        <div class="status-dot ${p.status} w-2 h-2"></div>
+                        <p class="text-[10px] font-black text-white truncate uppercase tracking-tight">${p.title}</p>
+                    </div>
+                `).join('');
+            }
 
-        const newProject = {
-            nama: document.getElementById('p-title').value,
-            deadline: document.getElementById('p-date').value,
-            kategori: document.getElementById('p-cat').value
-        };
+            const upcomingContainer = document.getElementById('upcoming-tasks');
+            const upcomingTasks = projects.filter(p => p.date > todayStr).sort((a,b) => a.date.localeCompare(b.date));
 
-        try {
-            // 1. Kirim ke Google Sheets
-            await fetch(scriptURL, {
-                method: 'POST',
-                body: JSON.stringify(newProject)
-            });
+            if (upcomingTasks.length === 0) {
+                upcomingContainer.innerHTML = `<p class="text-[9px] text-slate-500 font-bold uppercase text-center py-4 tracking-widest">Belum ada rencana</p>`;
+            } else {
+                upcomingContainer.innerHTML = upcomingTasks.slice(0, 10).map(p => {
+                    const d = new Date(p.date);
+                    const formattedDate = d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short' }).toUpperCase();
+                    return `
+                        <div class="bg-slate-800/40 p-3 rounded-xl border border-white/5 flex flex-col gap-1 cursor-pointer hover:bg-slate-800/80 transition-all" onclick="openDetail('${p.date}')">
+                            <div class="flex justify-between items-center">
+                                <span class="text-[8px] font-black text-indigo-400 tracking-tighter">${formattedDate}</span>
+                                <div class="status-dot ${p.status} w-1.5 h-1.5"></div>
+                            </div>
+                            <p class="text-[10px] font-black text-slate-200 truncate uppercase tracking-tight">${p.title}</p>
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
 
-            // 2. Simpan juga di local sebagai cadangan cepat
+        function openDetail(date) {
+            const list = document.getElementById('detail-list');
+            const dayTasks = projects.filter(p => p.date === date);
+            
+            document.getElementById('detail-date-title').innerText = new Date(date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase();
+            document.getElementById('quick-date').value = date;
+            
+            list.innerHTML = dayTasks.length === 0 ? 
+                `<div class="flex flex-col items-center justify-center py-10 opacity-30">
+                    <i class="fa-solid fa-calendar-day text-5xl mb-3"></i>
+                    <p class="text-center text-slate-500 font-black uppercase text-[10px] tracking-[0.2em]">Tidak ada agenda</p>
+                </div>` :
+                dayTasks.map(p => `
+                    <div class="bg-slate-800 p-4 rounded-2xl border border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <div class="status-dot ${p.status} w-2 h-2 shrink-0"></div>
+                            <div class="truncate">
+                                <p class="text-[8px] font-black text-indigo-400 uppercase tracking-widest leading-none mb-1">${p.cat}</p>
+                                <h4 class="text-sm font-black text-white uppercase truncate">${p.title}</h4>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 justify-end">
+                            <select onchange="updateStatus(${p.id}, this.value, '${date}')" class="bg-slate-900 text-[10px] font-black text-white px-3 py-2 rounded-lg outline-none border border-white/10">
+                                <option value="wait" ${p.status==='wait'?'selected':''}>WAIT</option>
+                                <option value="proses" ${p.status==='proses'?'selected':''}>PROSES</option>
+                                <option value="selesai" ${p.status==='selesai'?'selected':''}>DONE</option>
+                                <option value="publish" ${p.status==='publish'?'selected':''}>PUBLISH</option>
+                            </select>
+                            <button onclick="deleteProject(${p.id}, '${date}')" class="w-9 h-9 flex items-center justify-center rounded-lg bg-red-600/10 text-red-500 hover:bg-red-600 hover:text-white transition-all"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                        </div>
+                    </div>
+                `).join('');
+            
+            document.getElementById('detailModal').classList.remove('hidden');
+        }
+
+        document.getElementById('quickAddForm').onsubmit = (e) => {
+            e.preventDefault();
+            const date = document.getElementById('quick-date').value;
             projects.push({
                 id: Date.now(),
-                title: newProject.nama,
-                date: newProject.deadline,
-                cat: newProject.kategori,
+                title: document.getElementById('q-title').value,
+                date: date,
+                cat: document.getElementById('q-cat').value,
                 status: 'wait'
             });
-            localStorage.setItem('azmania_v97_db', JSON.stringify(projects));
+            save();
+            openDetail(date);
+            e.target.reset();
+            document.getElementById('quick-date').value = date;
+        };
 
-            // 3. Reset UI
+        function updateStatus(id, status, date) {
+            projects = projects.map(p => p.id === id ? {...p, status} : p);
+            save();
+            openDetail(date);
+        }
+
+        function deleteProject(id, date) {
+            projects = projects.filter(p => p.id !== id);
+            save();
+            openDetail(date);
+        }
+
+        function changeMonth(dir) {
+            currentViewDate.setMonth(currentViewDate.getMonth() + dir);
+            renderCalendar();
+        }
+
+        function openFormModal() { 
+            document.getElementById('p-date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('formModal').classList.remove('hidden'); 
+        }
+
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+        document.getElementById('projectForm').onsubmit = (e) => {
+            e.preventDefault();
+            projects.push({
+                id: Date.now(),
+                title: document.getElementById('p-title').value,
+                date: document.getElementById('p-date').value,
+                cat: document.getElementById('p-cat').value,
+                status: 'wait'
+            });
+            save();
             closeModal('formModal');
             e.target.reset();
-            
-            // 4. Refresh total dari Cloud
-            await init(); 
-        } catch (err) {
-            alert("Gagal sinkron ke Cloud, tapi data tersimpan di browser ini.");
-            console.error(err);
-        } finally {
-            btn.innerText = originalText;
-            btn.disabled = false;
+        };
+
+        function save() {
+            localStorage.setItem('azmania_v97_db', JSON.stringify(projects));
+            init(); 
         }
-    };
 
-    // Fungsi Update Clock, Marquee, RenderStats, RenderCalendar, RenderSidebars, dll
-    // GUNAKAN KODE ASLI ANDA DI BAWAH INI TANPA PERUBAHAN
-    // ... (copy sisa fungsi dari file index.html asli Anda di sini) ...
-
-    window.onload = init;
-  </script>
+        window.onload = init;
+    </script>
 </body>
 </html>
