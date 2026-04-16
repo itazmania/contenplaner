@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AZMANIA CONTENT HUB - Cloud Sync v10</title>
+    <title>AZMANIA CONTENT HUB - Cloud Sync v13</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
@@ -96,28 +96,6 @@
             box-shadow: 0 8px 20px -6px rgba(99, 102, 241, 0.5);
         }
 
-        .calendar-footer-marquee {
-            width: 100%;
-            background: rgba(15, 23, 42, 0.6);
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 12px 0;
-            margin-top: 20px;
-            border-bottom-left-radius: 24px;
-            border-bottom-right-radius: 24px;
-            overflow: hidden;
-        }
-
-        .marquee-content {
-            display: inline-block;
-            white-space: nowrap;
-            animation: marquee-slow 60s linear infinite;
-        }
-
-        @keyframes marquee-slow {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
-
         .sync-indicator {
             position: fixed;
             bottom: 20px;
@@ -139,9 +117,22 @@
         }
 
         .sync-indicator.active { transform: translateY(0); }
+        .sync-indicator.error { border-color: #ef4444; }
 
         .custom-scroll::-webkit-scrollbar { width: 4px; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+
+        .agenda-card {
+            background: rgba(30, 41, 59, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 14px;
+            padding: 12px;
+            transition: all 0.2s ease;
+        }
+        .agenda-card:hover {
+            background: rgba(30, 41, 59, 0.6);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
     </style>
 </head>
 <body class="p-3 md:p-8">
@@ -199,18 +190,20 @@
                     </div>
                 </div>
 
-                <div class="glass-panel p-5 border-l-4 border-l-red-500">
-                    <h3 class="text-[10px] font-black text-white uppercase tracking-widest mb-4 flex items-center gap-3">
-                        <i class="fa-solid fa-fire text-red-500"></i> Deadline Hari Ini
-                    </h3>
-                    <div id="today-tasks" class="space-y-3 max-h-[180px] overflow-y-auto custom-scroll pr-1"></div>
-                </div>
+                <div class="space-y-6">
+                    <div class="glass-panel p-5 border-l-4 border-l-red-500">
+                        <h3 class="text-[10px] font-black text-white uppercase tracking-widest mb-4 flex items-center gap-3">
+                            <i class="fa-solid fa-fire text-red-500"></i> Deadline Hari Ini
+                        </h3>
+                        <div id="today-tasks" class="space-y-3 max-h-[150px] overflow-y-auto custom-scroll pr-1"></div>
+                    </div>
 
-                <div class="glass-panel p-5 border-l-4 border-l-indigo-500">
-                    <h3 class="text-[10px] font-black text-white uppercase tracking-widest mb-4 flex items-center gap-3">
-                        <i class="fa-solid fa-calendar-check text-indigo-500"></i> Pipeline Mendatang
-                    </h3>
-                    <div id="upcoming-tasks" class="space-y-3 max-h-[220px] overflow-y-auto custom-scroll pr-1"></div>
+                    <div class="glass-panel p-5 border-l-4 border-l-indigo-500">
+                        <h3 class="text-[10px] font-black text-white uppercase tracking-widest mb-4 flex items-center gap-3">
+                            <i class="fa-solid fa-calendar-check text-indigo-400"></i> Agenda Mendatang
+                        </h3>
+                        <div id="upcoming-tasks" class="space-y-3 max-h-[300px] overflow-y-auto custom-scroll pr-1"></div>
+                    </div>
                 </div>
             </aside>
 
@@ -225,13 +218,6 @@
                         <button onclick="changeMonth(1)" class="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center transition-all"><i class="fa-solid fa-chevron-right text-sm"></i></button>
                     </div>
 
-                    <div class="flex flex-wrap gap-4 mb-6 justify-center">
-                        <div class="flex items-center gap-2"><div class="status-dot wait"></div><span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Wait</span></div>
-                        <div class="flex items-center gap-2"><div class="status-dot proses"></div><span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Proses</span></div>
-                        <div class="flex items-center gap-2"><div class="status-dot selesai"></div><span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Done</span></div>
-                        <div class="flex items-center gap-2"><div class="status-dot publish"></div><span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Publish</span></div>
-                    </div>
-
                     <div class="calendar-grid">
                         <div class="text-center py-2 text-[9px] font-black text-slate-500 uppercase tracking-widest">Min</div>
                         <div class="text-center py-2 text-[9px] font-black text-slate-500 uppercase tracking-widest">Sen</div>
@@ -242,10 +228,6 @@
                         <div class="text-center py-2 text-[9px] font-black text-slate-500 uppercase tracking-widest">Sab</div>
                         <div id="calendar-days" class="contents"></div>
                     </div>
-
-                    <div class="calendar-footer-marquee">
-                        <div class="marquee-content" id="marquee-list"></div>
-                    </div>
                 </div>
             </main>
         </div>
@@ -255,7 +237,6 @@
     <div id="formModal" class="fixed inset-0 z-[2000] hidden flex items-center justify-center p-4 bg-slate-950/95 backdrop-blur-xl">
         <div class="glass-panel w-full max-w-lg p-8">
             <h3 class="text-2xl font-black mb-1 text-white uppercase tracking-tighter">Entri Pipeline</h3>
-            <p class="text-slate-400 text-[10px] mb-8 font-bold uppercase tracking-widest">Otomatis Kirim ke Google Sheets</p>
             <form id="projectForm" class="space-y-5">
                 <div class="space-y-2">
                     <label class="text-[9px] font-black text-indigo-300 uppercase tracking-widest">Nama Proyek</label>
@@ -290,61 +271,26 @@
                 <h3 id="detail-date-title" class="text-xl md:text-2xl font-black text-white uppercase tracking-tighter"></h3>
                 <button onclick="closeModal('detailModal')" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-800 hover:bg-red-500 transition-all"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            
-            <div class="flex flex-col md:flex-row h-full overflow-hidden">
-                <div class="flex-grow p-6 overflow-y-auto custom-scroll md:border-r border-white/10">
-                    <p class="text-[9px] font-black text-indigo-300 uppercase tracking-widest mb-4">Daftar Agenda</p>
-                    <div id="detail-list" class="space-y-4"></div>
-                </div>
-                <div class="w-full md:w-80 p-6 bg-slate-900/50">
-                    <p class="text-[9px] font-black text-indigo-300 uppercase tracking-widest mb-4">Tambah Cepat</p>
-                    <form id="quickAddForm" class="space-y-4">
-                        <input type="hidden" id="quick-date">
-                        <input type="text" id="q-title" placeholder="Nama Proyek..." required class="w-full px-4 py-2 bg-slate-800 border border-white/5 rounded-lg text-xs text-white font-bold outline-none focus:border-indigo-500">
-                        <select id="q-cat" class="w-full px-4 py-2 bg-slate-800 border border-white/5 rounded-lg text-xs text-white font-bold outline-none">
-                            <option value="Video">Video</option>
-                            <option value="Desain">Desain</option>
-                            <option value="Sosmed">Sosmed</option>
-                            <option value="IT Hub">IT Hub</option>
-                        </select>
-                        <button type="submit" class="w-full py-3 btn-primary text-white rounded-lg font-black text-[9px] uppercase tracking-widest">Sinkronkan</button>
-                    </form>
-                </div>
-            </div>
+            <div class="p-6 overflow-y-auto custom-scroll" id="detail-list"></div>
         </div>
     </div>
 
     <script>
-        /** * GANTI URL DI BAWAH INI dengan URL Web App dari Google Apps Script Anda 
-         * Formatnya seperti: https://script.google.com/macros/s/ABCDEFG.../exec
-         */
         const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzW10m2jnwQBLTD56ASdv19luj1pOx692R7Q4LOCrdMQk1zvOHReatkTW8xTVTW_0YE/exec";
         
         let projects = JSON.parse(localStorage.getItem('azmania_v10_db')) || [];
         let currentViewDate = new Date();
         const months = ["JANUARI", "FEBRUARI", "MARET", "APRIL", "MEI", "JUNI", "JULI", "AGUSTUS", "SEPTEMBER", "OKTOBER", "NOVEMBER", "DESEMBER"];
 
-        // Fungsi Helper untuk melakukan Fetch dengan Retry (Exponential Backoff)
-        async function fetchWithRetry(url, options = {}, retries = 5, backoff = 1000) {
-            try {
-                const response = await fetch(url, options);
-                if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
-                return response;
-            } catch (err) {
-                if (retries > 0) {
-                    await new Promise(resolve => setTimeout(resolve, backoff));
-                    return fetchWithRetry(url, options, retries - 1, backoff * 2);
-                }
-                throw err;
-            }
-        }
-
         async function fetchFromCloud() {
-            if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes("GANTI_URL")) return;
+            if (!APPS_SCRIPT_URL) return;
             
-            showSync(true, "Menyelaraskan Semesta...");
+            showSync(true, "Sinkronisasi Cloud...");
             try {
-                const response = await fetchWithRetry(`${APPS_SCRIPT_URL}?action=read`);
+                const response = await fetch(`${APPS_SCRIPT_URL}?action=read&t=${Date.now()}`);
+                
+                if (!response.ok) throw new Error("Gagal terhubung ke Cloud");
+                
                 const data = await response.json();
                 if (data && Array.isArray(data)) {
                     projects = data;
@@ -353,17 +299,37 @@
                     showSync(false, "Sinergi Cloud Berhasil");
                 }
             } catch (err) {
-                console.error("Gagal ambil data cloud:", err);
-                showSync(false, "Gagal Menjangkau Cloud (Offline)");
+                console.warn("Gagal menjangkau cloud, menggunakan data lokal:", err);
+                showSync(false, projects.length > 0 ? "Bekerja Secara Offline" : "Koneksi Cloud Gagal", true);
+            }
+        }
+
+        async function syncToSheet(data, action = "add") {
+            if (!APPS_SCRIPT_URL) return;
+
+            showSync(true, "Mengirim ke Cloud...");
+            try {
+                const payload = { action: action, ...data };
+                await fetch(APPS_SCRIPT_URL, {
+                    method: "POST",
+                    mode: "no-cors", 
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+
+                showSync(false, "Terpahat di Cloud");
+                setTimeout(fetchFromCloud, 3000);
+            } catch (err) {
+                console.error("Sinkronisasi Gagal:", err);
+                showSync(false, "Gagal Mengirim", true);
             }
         }
 
         function init() {
             updateClock();
-            renderMarquee();
             renderAll();
-            // Jalankan sinkronisasi cloud
             fetchFromCloud();
+            setInterval(fetchFromCloud, 300000);
         }
 
         function renderAll() {
@@ -372,40 +338,20 @@
             renderSidebars();
         }
 
-        function showSync(status, message = "Menyinkronkan...") {
+        function showSync(status, message, isError = false) {
             const indicator = document.getElementById('syncIndicator');
             const text = document.getElementById('syncText');
             const icon = document.getElementById('syncIcon');
             
             text.innerText = message;
+            indicator.classList.toggle('error', isError);
+
             if (status) {
                 indicator.classList.add('active');
                 icon.className = "fa-solid fa-cloud-arrow-up animate-bounce text-indigo-400";
             } else {
-                icon.className = "fa-solid fa-circle-check text-emerald-400";
-                setTimeout(() => indicator.classList.remove('active'), 2500);
-            }
-        }
-
-        async function syncToSheet(data, action = "add") {
-            if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes("GANTI_URL")) return;
-
-            showSync(true, "Membangun Jejak Digital...");
-            try {
-                const payload = { action: action, ...data };
-                // Gunakan POST dengan mode no-cors untuk Apps Script
-                await fetch(APPS_SCRIPT_URL, {
-                    method: "POST",
-                    mode: "no-cors", 
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(payload)
-                });
-                showSync(false, "Terpahat Abadi di Cloud");
-                // Setelah kirim, coba refresh data terbaru
-                setTimeout(fetchFromCloud, 2000);
-            } catch (err) {
-                console.error("Sinkronisasi Gagal:", err);
-                showSync(false, "Gagal Menjangkau Langit");
+                icon.className = isError ? "fa-solid fa-triangle-exclamation text-red-400" : "fa-solid fa-circle-check text-emerald-400";
+                setTimeout(() => indicator.classList.remove('active'), 3000);
             }
         }
 
@@ -415,24 +361,6 @@
             document.getElementById('clock-date').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long' }).toUpperCase();
         }
         setInterval(updateClock, 1000);
-
-        function renderMarquee() {
-            const quotes = [
-                "MELUKIS MAKNA DI SETIAP PIXEL", 
-                "LILLAHI TA'ALA DALAM SETIAP KARYA", 
-                "SINERGI TANPA BATAS ANTAR PERANGKAT", 
-                "DI MANAPUN KAU BERADA, KARYA KITA TETAP SATU", 
-                "AZMANIA: MERAWAT MIMPI DENGAN DISIPLIN DIGITAL",
-                "SETIAP DEADLINE ADALAH LANGKAH MENUJU SURGA KARYA",
-                "KEJUJURAN VISUAL ADALAH IDENTITAS KITA"
-            ];
-            const container = document.getElementById('marquee-list');
-            container.innerHTML = [...quotes, ...quotes].map(q => `
-                <span class="mx-16 inline-flex items-center gap-4 font-black text-[10px] tracking-[0.3em] text-slate-300 uppercase italic">
-                    <i class="fa-solid fa-star text-indigo-400 text-[6px]"></i> ${q}
-                </span>
-            `).join('');
-        }
 
         function renderStats() {
             document.getElementById('active-count').innerText = projects.length;
@@ -447,76 +375,98 @@
             document.getElementById('avg-text').innerText = avg + '%';
         }
 
-        function getPriorityStatus(dayTasks) {
-            if (dayTasks.length === 0) return null;
-            if (dayTasks.some(p => p.status === 'wait')) return 'has-wait';
-            if (dayTasks.some(p => p.status === 'proses')) return 'has-proses';
-            if (dayTasks.some(p => p.status === 'selesai')) return 'has-selesai';
-            if (dayTasks.some(p => p.status === 'publish')) return 'has-publish';
-            return null;
-        }
-
         function renderCalendar() {
             const grid = document.getElementById('calendar-days');
             grid.innerHTML = '';
             const year = currentViewDate.getFullYear();
             const month = currentViewDate.getMonth();
             document.getElementById('month-year').innerText = `${months[month]} ${year}`;
+            
             const firstDay = new Date(year, month, 1).getDay();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
-            const realToday = new Date();
-            const realDateStr = `${realToday.getFullYear()}-${(realToday.getMonth() + 1).toString().padStart(2, '0')}-${realToday.getDate().toString().padStart(2, '0')}`;
+            const realToday = new Date().toISOString().split('T')[0];
 
-            for (let i = 0; i < firstDay; i++) grid.innerHTML += `<div class="calendar-day opacity-0 pointer-events-none"></div>`;
+            for (let i = 0; i < firstDay; i++) grid.innerHTML += `<div></div>`;
             for (let d = 1; d <= daysInMonth; d++) {
                 const dateStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${d.toString().padStart(2, '0')}`;
                 const dayTasks = projects.filter(p => p.date === dateStr);
-                const statusClass = getPriorityStatus(dayTasks);
-                const isToday = dateStr === realDateStr;
+                
+                let statusClass = '';
+                if (dayTasks.some(p => p.status === 'wait')) statusClass = 'has-wait';
+                else if (dayTasks.some(p => p.status === 'proses')) statusClass = 'has-proses';
+                else if (dayTasks.some(p => p.status === 'selesai')) statusClass = 'has-selesai';
+                else if (dayTasks.some(p => p.status === 'publish')) statusClass = 'has-publish';
 
                 const dayEl = document.createElement('div');
-                dayEl.className = `calendar-day ${isToday ? 'today-glow' : ''} ${statusClass ? statusClass : ''}`;
+                dayEl.className = `calendar-day ${dateStr === realToday ? 'today-glow' : ''} ${statusClass}`;
                 dayEl.onclick = () => openDetail(dateStr);
-                dayEl.innerHTML = `<span class="text-sm md:text-xl font-black ${isToday ? 'text-white' : (statusClass ? 'text-white' : 'text-slate-500')}">${d}</span>`;
+                dayEl.innerHTML = `<span class="text-sm font-black">${d}</span>`;
                 grid.appendChild(dayEl);
             }
         }
 
         function renderSidebars() {
-            const todayStr = new Date().toISOString().split('T')[0];
+            const now = new Date();
+            const todayStr = now.toISOString().split('T')[0];
+            
+            // Deadline Hari Ini
             const todayTasks = projects.filter(p => p.date === todayStr);
             const todayContainer = document.getElementById('today-tasks');
-            todayContainer.innerHTML = todayTasks.length === 0 ? `<p class="text-[9px] text-center text-slate-500 py-4 uppercase italic">Halaman Hari Ini Masih Putih</p>` :
-                todayTasks.map(p => `<div class="bg-slate-800/60 p-3 rounded-xl flex items-center gap-3"><div class="status-dot ${p.status}"></div><p class="text-[10px] font-black truncate uppercase tracking-tighter">${p.title}</p></div>`).join('');
+            todayContainer.innerHTML = todayTasks.length === 0 ? `<p class="text-[9px] text-center text-slate-500 py-4 italic uppercase">Kosong</p>` :
+                todayTasks.map(p => `<div class="bg-slate-800/60 p-3 rounded-xl flex items-center gap-3"><div class="status-dot ${p.status}"></div><p class="text-[10px] font-black truncate">${p.title}</p></div>`).join('');
+
+            // Agenda Mendatang (Next 7 Days)
+            const next7Days = new Date();
+            next7Days.setDate(now.getDate() + 7);
+            const next7DaysStr = next7Days.toISOString().split('T')[0];
+
+            const upcomingTasks = projects
+                .filter(p => p.date > todayStr && p.date <= next7DaysStr)
+                .sort((a, b) => new Date(a.date) - new Date(b.date));
 
             const upcomingContainer = document.getElementById('upcoming-tasks');
-            const upcoming = projects.filter(p => p.date > todayStr).sort((a,b) => a.date.localeCompare(b.date));
-            upcomingContainer.innerHTML = upcoming.length === 0 ? `<p class="text-[9px] text-center text-slate-500 py-4 uppercase italic">Masa Depan Masih Terbuka</p>` :
-                upcoming.slice(0, 5).map(p => `<div class="bg-slate-800/40 p-3 rounded-xl"><p class="text-[8px] font-black text-indigo-400">${p.date}</p><p class="text-[10px] font-black truncate uppercase text-white tracking-tighter">${p.title}</p></div>`).join('');
+            
+            if (upcomingTasks.length === 0) {
+                upcomingContainer.innerHTML = `<p class="text-[9px] text-center text-slate-500 py-4 italic uppercase">Tidak ada agenda dekat</p>`;
+            } else {
+                upcomingContainer.innerHTML = upcomingTasks.map(p => {
+                    const taskDate = new Date(p.date);
+                    const formattedDate = taskDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+                    return `
+                        <div class="agenda-card cursor-pointer" onclick="openDetail('${p.date}')">
+                            <div class="flex justify-between items-start mb-1">
+                                <span class="text-[8px] font-black text-indigo-400 uppercase tracking-tighter">${formattedDate}</span>
+                                <div class="status-dot ${p.status}"></div>
+                            </div>
+                            <p class="text-[10px] font-bold text-white leading-tight truncate">${p.title}</p>
+                            <p class="text-[8px] text-slate-400 mt-1 uppercase font-black">${p.cat || 'Konten'}</p>
+                        </div>
+                    `;
+                }).join('');
+            }
         }
 
         function openDetail(date) {
             const list = document.getElementById('detail-list');
             const dayTasks = projects.filter(p => p.date === date);
             document.getElementById('detail-date-title').innerText = date;
-            document.getElementById('quick-date').value = date;
             list.innerHTML = dayTasks.map(p => `
-                <div class="bg-slate-800 p-4 rounded-2xl flex items-center justify-between border border-white/5">
+                <div class="bg-slate-800 p-4 rounded-2xl flex items-center justify-between mb-4 border border-white/5">
                     <div class="flex items-center gap-3">
                         <div class="status-dot ${p.status} w-2 h-2"></div>
-                        <div><p class="text-[8px] font-black text-indigo-400 uppercase tracking-widest">${p.cat}</p><h4 class="text-sm font-black text-white uppercase">${p.title}</h4></div>
+                        <h4 class="text-sm font-black text-white">${p.title}</h4>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <select onchange="updateStatus(${p.id}, this.value, '${date}')" class="bg-slate-900 text-[10px] font-black p-2 rounded-lg border border-white/10 text-white outline-none focus:border-indigo-500">
+                    <div class="flex items-center gap-3">
+                        <select onchange="updateStatus(${p.id}, this.value, '${date}')" class="bg-slate-900 text-[10px] font-black p-2 rounded-lg border border-white/10 text-white outline-none">
                             <option value="wait" ${p.status==='wait'?'selected':''}>WAIT</option>
                             <option value="proses" ${p.status==='proses'?'selected':''}>PROSES</option>
                             <option value="selesai" ${p.status==='selesai'?'selected':''}>DONE</option>
                             <option value="publish" ${p.status==='publish'?'selected':''}>PUBLISH</option>
                         </select>
-                        <button onclick="deleteProject(${p.id}, '${date}')" class="w-9 h-9 rounded-lg bg-red-600/10 text-red-500 hover:bg-red-500 hover:text-white transition-all"><i class="fa-solid fa-trash-can"></i></button>
+                        <button onclick="deleteProject(${p.id}, '${date}')" class="text-red-500 hover:text-red-400 p-2"><i class="fa-solid fa-trash-can"></i></button>
                     </div>
                 </div>
-            `).join('') || `<div class="flex flex-col items-center justify-center py-12 opacity-30"><i class="fa-solid fa-calendar-day text-4xl mb-3"></i><p class="text-[10px] font-black uppercase tracking-widest italic">Kanvas Belum Terisi</p></div>`;
+            `).join('') || '<div class="py-10 text-center text-slate-500 italic uppercase text-[10px]">Belum Ada Agenda</div>';
             document.getElementById('detailModal').classList.remove('hidden');
         }
 
@@ -530,12 +480,11 @@
         }
 
         async function deleteProject(id, date) {
-            const projectToDelete = projects.find(p => p.id === id);
-            if (!projectToDelete) return;
+            const project = projects.find(p => p.id === id);
             projects = projects.filter(p => p.id !== id);
             saveLocal();
             openDetail(date);
-            await syncToSheet(projectToDelete, "delete");
+            await syncToSheet(project, "delete");
         }
 
         document.getElementById('projectForm').onsubmit = async (e) => {
@@ -551,24 +500,6 @@
             saveLocal();
             closeModal('formModal');
             e.target.reset();
-            await syncToSheet(newProject, "add");
-        };
-
-        document.getElementById('quickAddForm').onsubmit = async (e) => {
-            e.preventDefault();
-            const date = document.getElementById('quick-date').value;
-            const newProject = {
-                id: Date.now(),
-                title: document.getElementById('q-title').value,
-                date: date,
-                cat: document.getElementById('q-cat').value,
-                status: 'wait'
-            };
-            projects.push(newProject);
-            saveLocal();
-            openDetail(date);
-            e.target.reset();
-            document.getElementById('quick-date').value = date;
             await syncToSheet(newProject, "add");
         };
 
